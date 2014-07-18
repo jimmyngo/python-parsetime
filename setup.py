@@ -20,12 +20,12 @@ parsetime = Extension('parsetime',
                                     '-DDAEMON_GROUPNAME=\"daemon\"',
                                     '-DLFILE=\"/var/spool/cron/atjobs/.SEQ\"'])
 
-setup(name='parsetime',
-      version='1.2',
+setup(name='python-parsetime',
+      version='1.3',
       author='Daniel Pearson',
       author_email='daniel@nanoo.org',
       url='http://www.nanoo.org/parsetime/',
-      download_url='http://www.nanoo.org/parsetime/dist/',
+      download_url='https://github.com/jimmyngo/python-parsetime',
       description='A parser for date/time strings.',
       long_description='''
 ParseTime is a simple Python extension module that simply wraps the parsetime()

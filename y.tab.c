@@ -373,7 +373,7 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static int      yystacksize;
-#line 473 "parsetime.y"
+#line 497 "parsetime.y"
 
 
 time_t parsetime(time_t, int, char **);
@@ -756,460 +756,459 @@ yyreduce:
     switch (yyn)
     {
 case 5:
-#line 66 "parsetime.y"
+#line 68 "parsetime.y"
 {
-			time_only = 1;
-		}
+		time_only = 1;
+	}
 break;
 case 7:
-#line 71 "parsetime.y"
+#line 73 "parsetime.y"
 {
-			yearspec = 1;
-		}
+		yearspec = 1;
+	}
 break;
 case 10:
-#line 81 "parsetime.y"
+#line 85 "parsetime.y"
 {
-				exectm.tm_min = -1;
-				exectm.tm_hour = -1;
-				sscanf(yyvsp[0].charval, "%2d %2d", &exectm.tm_hour,
-					&exectm.tm_min);
-				free(yyvsp[0].charval);
+		exectm.tm_min = -1;
+		exectm.tm_hour = -1;
+		sscanf(yyvsp[0].charval, "%2d %2d", &exectm.tm_hour,
+			&exectm.tm_min);
+		free(yyvsp[0].charval);
 
-				if (exectm.tm_min > 60 || exectm.tm_min < 0) {
-					yyerror("Problem in minutes specification");
-					YYERROR;
-				}
-				if (exectm.tm_hour > 24 || exectm.tm_hour < 0) {
-					yyerror("Problem in hours specification");
-					YYERROR;
-					}
-			}
+		if (exectm.tm_min > 60 || exectm.tm_min < 0) {
+			yyerror("Problem in minutes specification");
+			YYERROR;
+		}
+		if (exectm.tm_hour > 24 || exectm.tm_hour < 0) {
+			yyerror("Problem in hours specification");
+			YYERROR;
+		}
+	}
 break;
 case 14:
-#line 101 "parsetime.y"
+#line 105 "parsetime.y"
 {
-				exectm.tm_hour = 12;
-				exectm.tm_min = 0;
-			}
+		exectm.tm_hour = 12;
+		exectm.tm_min = 0;
+	}
 break;
 case 15:
-#line 106 "parsetime.y"
+#line 110 "parsetime.y"
 {
-				exectm.tm_hour = 0;
-				exectm.tm_min = 0;
-			}
+		exectm.tm_hour = 0;
+		exectm.tm_min = 0;
+	}
 break;
 case 16:
-#line 111 "parsetime.y"
+#line 115 "parsetime.y"
 {
-				exectm.tm_hour = 16;
-				exectm.tm_min = 0;
-			}
+		exectm.tm_hour = 16;
+		exectm.tm_min = 0;
+	}
 break;
 case 18:
-#line 121 "parsetime.y"
+#line 127 "parsetime.y"
 {
-				sscanf(yyvsp[0].charval, "%d", &exectm.tm_hour);
-				exectm.tm_min = 0;
-				free(yyvsp[0].charval);
+		sscanf(yyvsp[0].charval, "%d", &exectm.tm_hour);
+		exectm.tm_min = 0;
+		free(yyvsp[0].charval);
 
-				if (exectm.tm_hour > 24 || exectm.tm_hour < 0) {
-					yyerror("Problem in hours specification");
-					YYERROR;
-				}
-			}
+		if (exectm.tm_hour > 24 || exectm.tm_hour < 0) {
+			yyerror("Problem in hours specification");
+			YYERROR;
+		}
+	}
 break;
 case 19:
-#line 134 "parsetime.y"
+#line 141 "parsetime.y"
 {
-					exectm.tm_min = -1;
-					exectm.tm_hour = -1;
-					sscanf(yyvsp[0].charval, "%d %*c %d", &exectm.tm_hour,
-						&exectm.tm_min);
-					free(yyvsp[0].charval);
+		exectm.tm_min = -1;
+		exectm.tm_hour = -1;
+		sscanf(yyvsp[0].charval, "%d %*c %d", &exectm.tm_hour,
+			&exectm.tm_min);
+		free(yyvsp[0].charval);
 
-					if (exectm.tm_min > 60 || exectm.tm_min < 0) {
-						yyerror("Problem in minutes specification");
-						YYERROR;
-					}
-					if (exectm.tm_hour > 24 || exectm.tm_hour < 0) {
-						yyerror("Problem in hours specification");
-						YYERROR;
-					}
-				}
+		if (exectm.tm_min > 60 || exectm.tm_min < 0) {
+			yyerror("Problem in minutes specification");
+			YYERROR;
+		}
+		if (exectm.tm_hour > 24 || exectm.tm_hour < 0) {
+			yyerror("Problem in hours specification");
+			YYERROR;
+		}
+	}
 break;
 case 20:
-#line 153 "parsetime.y"
+#line 161 "parsetime.y"
 {
-				if (exectm.tm_hour > 12) {
-					yyerror("Hour too large for AM");
-					YYERROR;
-				}
-				else if (exectm.tm_hour == 12) {
-					exectm.tm_hour = 0;
-				}
-			}
+		if (exectm.tm_hour > 12) {
+			yyerror("Hour too large for AM");
+			YYERROR;
+		}
+		else if (exectm.tm_hour == 12) {
+			exectm.tm_hour = 0;
+		}
+	}
 break;
 case 21:
-#line 163 "parsetime.y"
+#line 171 "parsetime.y"
 {
-				if (exectm.tm_hour > 12) {
-					yyerror("Hour too large for PM");
-					YYERROR;
-				}
-				else if (exectm.tm_hour < 12) {
-					exectm.tm_hour +=12;
-				}
-			}
+		if (exectm.tm_hour > 12) {
+			yyerror("Hour too large for PM");
+			YYERROR;
+		}
+		else if (exectm.tm_hour < 12) {
+			exectm.tm_hour +=12;
+		}
+	}
 break;
 case 22:
-#line 175 "parsetime.y"
-{
-					isgmt = 1;
-				}
-break;
-case 26:
 #line 184 "parsetime.y"
 {
-					add_date ((6 + yyvsp[0].intval - exectm.tm_wday) %7 + 1, DAY);
-				}
+		isgmt = 1;
+	}
+break;
+case 26:
+#line 194 "parsetime.y"
+{
+		add_date ((6 + yyvsp[0].intval - exectm.tm_wday) %7 + 1, DAY);
+	}
 break;
 case 28:
-#line 189 "parsetime.y"
+#line 199 "parsetime.y"
 {
-					add_date(1, DAY);
-				}
+		add_date(1, DAY);
+	}
 break;
 case 29:
-#line 193 "parsetime.y"
+#line 203 "parsetime.y"
 {
-					int ynum = -1;
-					int mnum = -1;
-					int dnum = -1;
+		int ynum = -1;
+		int mnum = -1;
+		int dnum = -1;
 
-					yearspec = 1;
-					if (sscanf(yyvsp[0].charval, "%d %*c %d %*c %d",
-						&ynum, &mnum, &dnum) != 3) {
-						yyerror("Error in hypenated date");
-						YYERROR;
-					}
+		yearspec = 1;
+		if (sscanf(yyvsp[0].charval, "%d %*c %d %*c %d",
+			&ynum, &mnum, &dnum) != 3) {
+			yyerror("Error in hypenated date");
+			YYERROR;
+		}
 
-					if (mnum < 1 || mnum > 12) {
-					    yyerror("Error in month number");
-					    YYERROR;
-					}
-					exectm.tm_mon = mnum -1;
+		if (mnum < 1 || mnum > 12) {
+			yyerror("Error in month number");
+			YYERROR;
+		}
+		exectm.tm_mon = mnum -1;
 
-					if (ynum < 70) {
-					    ynum += 100;
-					}
-					else if (ynum > 1900) {
-					    ynum -= 1900;
-					}
-					exectm.tm_year = ynum ;
+		if (ynum < 70) {
+			ynum += 100;
+		}
+		else if (ynum > 1900) {
+			ynum -= 1900;
+		}
+		exectm.tm_year = ynum ;
 
-					if (dnum < 1
-						|| ((mnum ==  1 || mnum ==  3 || mnum ==  5 ||
-							 mnum ==  7 || mnum ==  8 || mnum == 10 ||
-							 mnum == 12) && dnum > 31)
-						|| ((mnum ==  4 || mnum ==  6 || mnum ==  9 ||
-							 mnum == 11) && dnum > 30)
-						|| (mnum ==  2 && dnum > 29 &&
-							__isleap(ynum+1900))
-						|| (mnum ==  2 && dnum > 28 &&
-							!__isleap(ynum+1900))) {
-						yyerror("Error in day of month");
-						YYERROR; 
-					}
-					exectm.tm_mday = dnum;
+		if (dnum < 1
+			|| ((mnum ==  1 || mnum ==  3 || mnum ==  5 ||
+					mnum ==  7 || mnum ==  8 || mnum == 10 ||
+					mnum == 12) && dnum > 31)
+			|| ((mnum ==  4 || mnum ==  6 || mnum ==  9 ||
+					mnum == 11) && dnum > 30)
+			|| (mnum ==  2 && dnum > 29 &&
+				__isleap(ynum+1900))
+			|| (mnum ==  2 && dnum > 28 &&
+				!__isleap(ynum+1900))) {
+			yyerror("Error in day of month");
+			YYERROR;
+		}
+		exectm.tm_mday = dnum;
 
-					free(yyvsp[0].charval);
-				}
+		free(yyvsp[0].charval);
+	}
 break;
 case 30:
-#line 237 "parsetime.y"
+#line 247 "parsetime.y"
 {
-					int ynum = -1;
-					int mnum = -1;
-					int dnum = -1;
+		int ynum = -1;
+		int mnum = -1;
+		int dnum = -1;
 
-					yearspec = 1;
+		yearspec = 1;
 
-					if (sscanf(yyvsp[0].charval, "%d %*c %d %*c %d",
-						&dnum, &mnum, &ynum) != 3) {
-						yyerror("Error in dotted date");
-						YYERROR;
-					}
+		if (sscanf(yyvsp[0].charval, "%d %*c %d %*c %d",
+			&dnum, &mnum, &ynum) != 3) {
+			yyerror("Error in dotted date");
+			YYERROR;
+		}
 
-					if (mnum < 1 || mnum > 12) {
-						yyerror("Error in month number");
-						YYERROR;
-					}
-					exectm.tm_mon = mnum -1;
+		if (mnum < 1 || mnum > 12) {
+			yyerror("Error in month number");
+			YYERROR;
+		}
+		exectm.tm_mon = mnum -1;
 
-					if (ynum < 70) {
-						ynum += 100;
-					}
-					else if (ynum > 1900) {
-						ynum -= 1900;
-					}
-					exectm.tm_year = ynum ;
+		if (ynum < 70) {
+			ynum += 100;
+		}
+		else if (ynum > 1900) {
+			ynum -= 1900;
+		}
+		exectm.tm_year = ynum ;
 
-					if (dnum < 1
-						|| ((mnum ==  1 || mnum ==  3 || mnum ==  5 ||
-							 mnum ==  7 || mnum ==  8 || mnum == 10 ||
-							 mnum == 12) && dnum > 31)
-						|| ((mnum ==  4 || mnum ==  6 || mnum ==  9 ||
-							 mnum == 11) && dnum > 30)
-						|| (mnum ==  2 && dnum > 29 &&  __isleap(ynum+1900))
-						|| (mnum ==  2 && dnum > 28 && !__isleap(ynum+1900))) {
-						yyerror("Error in day of month");
-						YYERROR; 
-					}
-					exectm.tm_mday = dnum;
+		if (dnum < 1
+			|| ((mnum ==  1 || mnum ==  3 || mnum ==  5 ||
+					mnum ==  7 || mnum ==  8 || mnum == 10 ||
+					mnum == 12) && dnum > 31)
+			|| ((mnum ==  4 || mnum ==  6 || mnum ==  9 ||
+					mnum == 11) && dnum > 30)
+			|| (mnum ==  2 && dnum > 29 &&  __isleap(ynum+1900))
+			|| (mnum ==  2 && dnum > 28 && !__isleap(ynum+1900))) {
+			yyerror("Error in day of month");
+			YYERROR; 
+		}
+		exectm.tm_mday = dnum;
 
-					free(yyvsp[0].charval);
-				}
+		free(yyvsp[0].charval);
+	}
 break;
 case 34:
-#line 283 "parsetime.y"
+#line 293 "parsetime.y"
 {
-					/* Ok, this is a kluge.  I hate design errors...  -Joey */
-					char shallot[5];
-					char *onion;
+		/* Ok, this is a kluge.  I hate design errors...  -Joey */
+		char shallot[5];
+		char *onion;
 
-					yearspec = 1;
-					onion=yyvsp[0].charval;
-					memset (shallot, 0, sizeof (shallot));
-					if (strlen(yyvsp[0].charval) == 5 || strlen(yyvsp[0].charval) == 7) {
-						strncpy (shallot,onion,1);
-						onion++;
-					} else {
-						strncpy (shallot,onion,2);
-						onion+=2;
-					}
-					sscanf(shallot, "%d", &exectm.tm_mon);
+		yearspec = 1;
+		onion=yyvsp[0].charval;
+		memset (shallot, 0, sizeof (shallot));
+		if (strlen(yyvsp[0].charval) == 5 || strlen(yyvsp[0].charval) == 7) {
+			strncpy (shallot,onion,1);
+			onion++;
+		} else {
+			strncpy (shallot,onion,2);
+			onion+=2;
+		}
+		sscanf(shallot, "%d", &exectm.tm_mon);
 
-					if (exectm.tm_mon < 1 || exectm.tm_mon > 12) {
-						yyerror("Error in month number");
-						YYERROR;
-					}
-					exectm.tm_mon--;
+		if (exectm.tm_mon < 1 || exectm.tm_mon > 12) {
+			yyerror("Error in month number");
+			YYERROR;
+		}
+		exectm.tm_mon--;
 
-					memset (shallot, 0, sizeof (shallot));
-					strncpy (shallot,onion,2);
-						sscanf(shallot, "%d", &exectm.tm_mday);
-					if (exectm.tm_mday < 0 || exectm.tm_mday > 31)
-					{
-						yyerror("Error in day of month");
-						YYERROR;
-					}
+		memset (shallot, 0, sizeof (shallot));
+		strncpy (shallot,onion,2);
+			sscanf(shallot, "%d", &exectm.tm_mday);
+		if (exectm.tm_mday < 0 || exectm.tm_mday > 31) {
+			yyerror("Error in day of month");
+			YYERROR;
+		}
 
-					onion+=2;
-					memset (shallot, 0, sizeof (shallot));
-					strncpy (shallot,onion,4);
-					if ( sscanf(shallot, "%d", &exectm.tm_year) != 1) {
-						yyerror("Error in year");
-						YYERROR;
-					}
-					if (exectm.tm_year < 70) {
-						exectm.tm_year += 100;
-					}
-					else if (exectm.tm_year > 1900) {
-						exectm.tm_year -= 1900;
-					}
+		onion+=2;
+		memset (shallot, 0, sizeof (shallot));
+		strncpy (shallot,onion,4);
+		if ( sscanf(shallot, "%d", &exectm.tm_year) != 1) {
+			yyerror("Error in year");
+			YYERROR;
+		}
+		if (exectm.tm_year < 70) {
+			exectm.tm_year += 100;
+		}
+		else if (exectm.tm_year > 1900) {
+			exectm.tm_year -= 1900;
+		}
 
-					free (yyvsp[0].charval);
-				}
+		free (yyvsp[0].charval);
+	}
 break;
 case 35:
-#line 332 "parsetime.y"
+#line 341 "parsetime.y"
 {
-					add_date(1, yyvsp[0].floatval);
-				}
+		add_date(1, yyvsp[0].floatval);
+	}
 break;
 case 36:
-#line 336 "parsetime.y"
+#line 345 "parsetime.y"
 {
-					add_date ((6 + yyvsp[0].intval - exectm.tm_wday) %7 +1, DAY);
-				}
+		add_date ((6 + yyvsp[0].intval - exectm.tm_wday) %7 +1, DAY);
+	}
 break;
 case 38:
-#line 344 "parsetime.y"
+#line 355 "parsetime.y"
 { exectm.tm_mon = 0; }
 break;
 case 39:
-#line 345 "parsetime.y"
+#line 356 "parsetime.y"
 { exectm.tm_mon = 1; }
 break;
 case 40:
-#line 346 "parsetime.y"
+#line 357 "parsetime.y"
 { exectm.tm_mon = 2; }
 break;
 case 41:
-#line 347 "parsetime.y"
+#line 358 "parsetime.y"
 { exectm.tm_mon = 3; }
 break;
 case 42:
-#line 348 "parsetime.y"
+#line 359 "parsetime.y"
 { exectm.tm_mon = 4; }
 break;
 case 43:
-#line 349 "parsetime.y"
+#line 360 "parsetime.y"
 { exectm.tm_mon = 5; }
 break;
 case 44:
-#line 350 "parsetime.y"
+#line 361 "parsetime.y"
 { exectm.tm_mon = 6; }
 break;
 case 45:
-#line 351 "parsetime.y"
+#line 362 "parsetime.y"
 { exectm.tm_mon = 7; }
 break;
 case 46:
-#line 352 "parsetime.y"
+#line 363 "parsetime.y"
 { exectm.tm_mon = 8; }
 break;
 case 47:
-#line 353 "parsetime.y"
+#line 364 "parsetime.y"
 { exectm.tm_mon = 9; }
 break;
 case 48:
-#line 354 "parsetime.y"
+#line 365 "parsetime.y"
 { exectm.tm_mon =10; }
 break;
 case 49:
-#line 355 "parsetime.y"
+#line 366 "parsetime.y"
 { exectm.tm_mon =11; }
 break;
 case 50:
-#line 359 "parsetime.y"
+#line 371 "parsetime.y"
 {
-					{
-						int mnum = -1;
-						sscanf(yyvsp[0].charval, "%d", &mnum);
+		{
+			int mnum = -1;
+			sscanf(yyvsp[0].charval, "%d", &mnum);
 
-						if (mnum < 1 || mnum > 12) {
-							yyerror("Error in month number");
-							YYERROR;
-						}
-						exectm.tm_mon = mnum -1;
-						free(yyvsp[0].charval);
-					}
+			if (mnum < 1 || mnum > 12) {
+				yyerror("Error in month number");
+				YYERROR;
 			}
+			exectm.tm_mon = mnum -1;
+			free(yyvsp[0].charval);
+		}
+	}
 break;
 case 51:
-#line 375 "parsetime.y"
-{
-				exectm.tm_mday = -1;
-				sscanf(yyvsp[0].charval, "%d", &exectm.tm_mday);
-				if (exectm.tm_mday < 1 || exectm.tm_mday > 31)
-				{
-					yyerror("Error in day of month");
-					YYERROR; 
-				}
-				free(yyvsp[0].charval);
-			}
-break;
-case 52:
 #line 388 "parsetime.y"
 {
-			yearspec = 1;
-			{
-				int ynum;
+		exectm.tm_mday = -1;
+		sscanf(yyvsp[0].charval, "%d", &exectm.tm_mday);
+		if (exectm.tm_mday < 1 || exectm.tm_mday > 31)
+		{
+			yyerror("Error in day of month");
+			YYERROR; 
+		}
+		free(yyvsp[0].charval);
+	}
+break;
+case 52:
+#line 402 "parsetime.y"
+{
+		yearspec = 1;
+		{
+		int ynum;
 
-				if ( sscanf(yyvsp[0].charval, "%d", &ynum) != 1) {
-					yyerror("Error in year");
-					YYERROR;
-				}
-				if (ynum < 70) {
-					ynum += 100;
-				}
-				else if (ynum > 1900) {
-					ynum -= 1900;
-				}
+		if ( sscanf(yyvsp[0].charval, "%d", &ynum) != 1) {
+			yyerror("Error in year");
+			YYERROR;
+		}
+		if (ynum < 70) {
+			ynum += 100;
+		}
+		else if (ynum > 1900) {
+			ynum -= 1900;
+		}
 
-				exectm.tm_year = ynum ;
-				free(yyvsp[0].charval);
-				}
-			}
+		exectm.tm_year = ynum ;
+		free(yyvsp[0].charval);
+		}
+	}
 break;
 case 53:
-#line 410 "parsetime.y"
+#line 425 "parsetime.y"
 { yyval.intval = 0; }
 break;
 case 54:
-#line 411 "parsetime.y"
+#line 426 "parsetime.y"
 { yyval.intval = 1; }
 break;
 case 55:
-#line 412 "parsetime.y"
+#line 427 "parsetime.y"
 { yyval.intval = 2; }
 break;
 case 56:
-#line 413 "parsetime.y"
+#line 428 "parsetime.y"
 { yyval.intval = 3; }
 break;
 case 57:
-#line 414 "parsetime.y"
+#line 429 "parsetime.y"
 { yyval.intval = 4; }
 break;
 case 58:
-#line 415 "parsetime.y"
+#line 430 "parsetime.y"
 { yyval.intval = 5; }
 break;
 case 59:
-#line 416 "parsetime.y"
+#line 431 "parsetime.y"
 { yyval.intval = 6; }
 break;
 case 62:
-#line 424 "parsetime.y"
+#line 441 "parsetime.y"
 {
-				add_date(yyvsp[-1].floatval, yyvsp[0].floatval);
-			}
+		add_date(yyvsp[-1].floatval, yyvsp[0].floatval);
+	}
 break;
 case 63:
-#line 430 "parsetime.y"
+#line 448 "parsetime.y"
 {
-				add_date(-yyvsp[-1].floatval, yyvsp[0].floatval);
-			}
+		add_date(-yyvsp[-1].floatval, yyvsp[0].floatval);
+	}
 break;
 case 64:
-#line 436 "parsetime.y"
+#line 455 "parsetime.y"
 {
-					if (sscanf(yyvsp[0].charval, "%f", &yyval.floatval) != 1) {
-						yyerror("Unknown increment");
-						YYERROR;
-					}
-				free(yyvsp[0].charval);
-				}
+		if (sscanf(yyvsp[0].charval, "%f", &yyval.floatval) != 1) {
+			yyerror("Unknown increment");
+			YYERROR;
+		}
+	free(yyvsp[0].charval);
+	}
 break;
 case 65:
-#line 445 "parsetime.y"
-{ yyval.floatval = MINUTE ; }
+#line 465 "parsetime.y"
+{ yyval.floatval = MINUTE; }
 break;
 case 66:
-#line 446 "parsetime.y"
-{ yyval.floatval = HOUR   ; }
+#line 466 "parsetime.y"
+{ yyval.floatval = HOUR; }
 break;
 case 67:
-#line 447 "parsetime.y"
-{ yyval.floatval = DAY    ; time_only = 0; }
+#line 467 "parsetime.y"
+{ yyval.floatval = DAY; time_only = 0; }
 break;
 case 68:
-#line 448 "parsetime.y"
-{ yyval.floatval = WEEK   ; time_only = 0; }
+#line 468 "parsetime.y"
+{ yyval.floatval = WEEK; time_only = 0; }
 break;
 case 69:
-#line 449 "parsetime.y"
-{ yyval.floatval = MONTH  ; time_only = 0; }
+#line 469 "parsetime.y"
+{ yyval.floatval = MONTH; time_only = 0; }
 break;
 case 70:
-#line 450 "parsetime.y"
-{ yyval.floatval = YEAR   ; time_only = 0; }
+#line 470 "parsetime.y"
+{ yyval.floatval = YEAR; time_only = 0; }
 break;
-#line 1213 "y.tab.c"
+#line 1212 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;

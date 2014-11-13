@@ -78,6 +78,7 @@ utc		{ COPY_TOK ; return UTC; }
 [0-9]{1,2}\.[0-9]{1,2}\.[0-9]{2}([0-9]{2})?	{ COPY_TOK ; COPY_VAL; return DOTTEDDATE; }
 [0-9]{2}([0-9]{2})?-[0-9]{1,2}-[0-9]{1,2}	{ COPY_TOK ; COPY_VAL; return HYPHENDATE; }
 [012]?[0-9][:'h,.][0-9]{2}	{ COPY_TOK ; COPY_VAL; return HOURMIN; }
+[0-9]+.[0-9]+	{ COPY_TOK ; COPY_VAL; return FLOAT; }
 [ \t\n]		;
 .		{ COPY_TOK ; return yytext[0]; }
 

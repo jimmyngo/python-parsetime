@@ -74,11 +74,11 @@ utc          { COPY_TOK ; return UTC; }
 [0-9]{2}     { COPY_TOK ; COPY_VAL; return INT2DIGIT; }
 [0-9]{4}     { COPY_TOK ; COPY_VAL; return INT4DIGIT; }
 [0-9]{5,8}   { COPY_TOK ; COPY_VAL; return INT5_8DIGIT; }
+[0-9]+\.[0-9]+                              { COPY_TOK ; COPY_VAL; return FLOAT; }
 [0-9]+       { COPY_TOK ; COPY_VAL; return INT; }
 [0-9]{1,2}\.[0-9]{1,2}\.[0-9]{2}([0-9]{2})? { COPY_TOK ; COPY_VAL; return DOTTEDDATE; }
 [0-9]{2}([0-9]{2})?-[0-9]{1,2}-[0-9]{1,2}   { COPY_TOK ; COPY_VAL; return HYPHENDATE; }
 [012]?[0-9][:'h,.][0-9]{2}                  { COPY_TOK ; COPY_VAL; return HOURMIN; }
-[0-9]+.[0-9]+                               { COPY_TOK ; COPY_VAL; return FLOAT; }
 [ \t\n]      ;
 .            { COPY_TOK ; return yytext[0]; }
 

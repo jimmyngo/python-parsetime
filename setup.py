@@ -21,7 +21,7 @@ parsetime = Extension('parsetime',
                                     '-DLFILE=\"/var/spool/cron/atjobs/.SEQ\"'])
 
 setup(name='python-parsetime',
-      version='1.5',
+      version='1.5.1',
       author='Daniel Pearson',
       author_email='daniel@nanoo.org',
       url='http://www.nanoo.org/parsetime/',

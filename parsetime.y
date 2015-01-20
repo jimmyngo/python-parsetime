@@ -632,7 +632,6 @@ add_seconds(struct tm *tm, long numsec)
 int
 add_date(float number, int period)
 {
-    printf("%f", number);
     switch(period) {
     case MINUTE:
         add_seconds(&exectm , 60l*number);

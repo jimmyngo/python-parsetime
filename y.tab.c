@@ -512,7 +512,6 @@ add_seconds(struct tm *tm, long numsec)
 int
 add_date(float number, int period)
 {
-    printf("%f", number);
     switch(period) {
     case MINUTE:
         add_seconds(&exectm , 60l*number);
@@ -575,7 +574,7 @@ add_date(float number, int period)
 
     return 0;
 }
-#line 579 "y.tab.c"
+#line 578 "y.tab.c"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack(void)
 {
@@ -1209,7 +1208,7 @@ case 70:
 #line 470 "parsetime.y"
 { yyval.floatval = YEAR; time_only = 0; }
 break;
-#line 1213 "y.tab.c"
+#line 1212 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;

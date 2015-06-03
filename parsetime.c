@@ -540,12 +540,9 @@ month(struct tm *tm)
     long mday = 0, wday, mon;
     int tlen;
 
+    /* Reset seconds if we're not dealing with NOW */
+    tm->tm_sec = 0;
     switch (sc_tokid) {
-        case PLUS:
-        case MINUS:
-            plusminus(tm);
-            break;
-
         case TOMORROW:
             /* do something tomorrow */
             tm->tm_mday ++;
@@ -637,6 +634,11 @@ month(struct tm *tm)
 
             assign_date(tm, mday, mon, year);
             break;
+        case PLUS:
+        case MINUS:
+            plusminus(tm);
+            break;
+
     } /* case */
 } /* month */
 

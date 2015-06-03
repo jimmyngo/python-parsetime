@@ -38,5 +38,5 @@ CREDITS
 =======
 parsetime.c was copied from FreeBSD's "at" implementation.
 
-Copyright (C) 1993, 1994 Thomas Koenig
-Copyright (C) 1993       David Parsons
+> Copyright (C) 1993, 1994 Thomas Koenig
+> Copyright (C) 1993       David Parsons

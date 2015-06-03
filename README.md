@@ -16,6 +16,7 @@ To build the Python C extension module:
     python setup.py build
 
 This package should otherwise be available in PyPI and can be install via:
+
     pip instll python-parsetime
 
 USAGE

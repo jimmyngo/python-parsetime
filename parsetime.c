@@ -295,8 +295,10 @@ static void
 expect(const int *desired)
 {
     int next_token;
+    int i;
+
     next_token = token();
-    for (int i = 0; i < sizeof(desired); i++) {
+    for (i = 0; i < sizeof(desired); i++) {
         if (next_token == desired[i]) {
             return;
         }
@@ -723,4 +725,5 @@ int main (int argc, char **argv) {
     time_t result;
     result = parsetime(argc, argv);
     printf("%s", ctime(&result));
+    return 1;
 }

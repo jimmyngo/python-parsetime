@@ -312,29 +312,35 @@ expect(const int *desired)
  * plus_or_minus() holds functionality common to plus() and minus()
  */
 static void
-plus_or_minus(struct tm *tm, int delay)
+plus_or_minus(struct tm *tm, float delay)
 {
-    int expectplur;
-
-    expectplur = (delay != 1 && delay != -1) ? 1 : 0;
-
     switch (token()) {
         case YEARS:
-            tm->tm_year += delay;
-            break;
+            {
+                int years = delay;
+                tm->tm_year += years;
+                /* Decimal years are estimated based on 365 days */
+                delay = (delay - years) * 31536000;
+                break;
+            }
         case MONTHS:
-            tm->tm_mon += delay;
-            break;
+            {
+                int months = delay;
+                tm->tm_mon += months;
+                /* Decimal months are estimated based on 30 days */
+                delay = (delay - months) * 2592000;
+                break;
+            }
         case WEEKS:
-            delay *= 7;
+            delay *= 604800;
         case DAYS:
-            tm->tm_mday += delay;
+            delay *= 86400;
             break;
         case HOURS:
-            tm->tm_hour += delay;
+            delay *= 3600;
             break;
         case MINUTES:
-            tm->tm_min += delay;
+            delay *= 60;
             break;
         case SECONDS:
             tm->tm_sec += delay;
@@ -344,42 +350,13 @@ plus_or_minus(struct tm *tm, int delay)
             break;
     }
 
+    tm->tm_sec += delay;
+
     tm->tm_isdst = -1;
     if (mktime(tm) < 0) {
         plonk(sc_tokid);
     }
 } /* plus_or_minus */
-
-
-/*
- * plus() parses a + time
- *  at PLUS NUMBER [SECONDS|MINUTES|HOURS|DAYS|WEEKS|MONTHS|YEARS]
- */
-static void
-plus(struct tm *tm)
-{
-    int delay;
-
-    expect(expecting_number);
-
-    delay = atoi(sc_token);
-    plus_or_minus(tm, delay);
-} /* plus */
-
-
-/*
- * minus() is like plus
- */
-static void
-minus(struct tm *tm)
-{
-    int delay;
-
-    expect(expecting_number);
-
-    delay = -atoi(sc_token);
-    plus_or_minus(tm, delay);
-} /* minus */
 
 
 /*
@@ -391,13 +368,56 @@ minus(struct tm *tm)
 static void
 plusminus(struct tm *tm)
 {
+    int op_token;
+    int float_len, token_len;
+    char* float_value;
+    float delay;
+
+    float_len = 0;
     while (sc_tokid != EOF) {
         switch(sc_tokid) {
-            case PLUS:
-                plus(tm);
-                break;
             case MINUS:
-                minus(tm);
+            case PLUS:
+                op_token = sc_tokid;
+                expect(expecting_number);
+
+                /* Look for decimal value for increments */
+                if (*sct == '.') {
+                    /* float_value will have concatinated floating point reconstructed */
+                    if ((float_value = malloc((strlen(sc_token) + 1) * sizeof(char))) == NULL) {
+                        errx(EXIT_FAILURE, "virtual memory exhausted");
+                    }
+
+                    /* Copy numbers before the decimal */
+                    token_len = strlen(sc_token);
+                    memcpy(float_value, sc_token,token_len);
+                    float_len += token_len;
+
+                    /* Skip decimal */
+                    sct++;
+                    expect(expecting_number);
+
+                    /* Reinsert the decimal */
+                    float_value[float_len] = '.';
+                    float_value[float_len + 1] = '\0';
+
+                    /* Copy numbers after the decimal */
+                    float_len += strlen(sc_token);
+                    if ((float_value = realloc(float_value, float_len * sizeof(char))) == NULL) {
+                        errx(EXIT_FAILURE, "virtual memory exhausted");
+                    }
+
+                    strncat(float_value, sc_token, strlen(sc_token));
+                } else {
+                    float_value = sc_token;
+                }
+
+                delay = atof(float_value); if (op_token == MINUS) {
+                    delay = -delay;
+                }
+
+                plus_or_minus(tm, delay);
+                free(float_value);
                 break;
         }
         token();
@@ -721,7 +741,10 @@ parsetime(int argc, char **argv)
     return runtimer;
 } /* parsetime */
 
-int main (int argc, char **argv) {
+int main
+(int argc, char **argv)
+{
+/* main function to build command-line binary for testing */
     time_t result;
     result = parsetime(argc, argv);
     printf("%s", ctime(&result));

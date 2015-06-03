@@ -1,19 +1,15 @@
 CC 		= cc
 CFLAGS 		= -Wall
 
-SRCS   	= parsetime.
-PARSER_SRCS	= parsetime.l parsetime.y
+SRCS   	= parsetime.c
 
 .PHONY: all install clean dist distclean
 
-all: $(CSRCS)
+all: 
+	$(CC) -o parsetime $(CFLAGS) $(SRCS)
 
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
 clean:
 	rm -f $()
-
-.depend: $(CSRCS)
-	gcc $(CFLAGS) -MM $(CSRCS) > .depend
-

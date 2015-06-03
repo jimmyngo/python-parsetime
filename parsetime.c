@@ -56,78 +56,92 @@
 enum {
     MIDNIGHT, NOON, TEATIME,
     PM, AM, TOMORROW, TODAY, NOW,
-    MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS,
+    SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS,
     NUMBER, PLUS, MINUS, DOT, SLASH, ID, JUNK,
     JAN, FEB, MAR, APR, MAY, JUN,
     JUL, AUG, SEP, OCT, NOV, DEC,
     SUN, MON, TUE, WED, THU, FRI, SAT
-    };
+};
 
 /* parse translation table - table driven parsers can be your FRIEND!  */
 static const struct {
     const char *name;   /* token name */
     int value;          /* token id */
-    int plural;         /* is this plural? */
 } Specials[] = {
-    { "midnight", MIDNIGHT,0 }, /* 00:00:00 of today or tomorrow */
-    { "noon", NOON,0 },         /* 12:00:00 of today or tomorrow */
-    { "teatime", TEATIME,0 },   /* 16:00:00 of today or tomorrow */
-    { "am", AM,0 },             /* morning times for 0-12 clock */
-    { "pm", PM,0 },             /* evening times for 0-12 clock */
-    { "tomorrow", TOMORROW,0 }, /* execute 24 hours from time */
-    { "today", TODAY, 0 },      /* execute today - don't advance time */
-    { "now", NOW,0 },           /* opt prefix for PLUS */
+    { "midnight", MIDNIGHT }, /* 00:00:00 of today or tomorrow */
+    { "noon", NOON },         /* 12:00:00 of today or tomorrow */
+    { "teatime", TEATIME },   /* 16:00:00 of today or tomorrow */
+    { "am", AM },             /* morning times for 0-12 clock */
+    { "pm", PM },             /* evening times for 0-12 clock */
+    { "tomorrow", TOMORROW }, /* execute 24 hours from time */
+    { "today", TODAY },       /* execute today - don't advance time */
+    { "now", NOW },           /* opt prefix for PLUS/MINUS */
+    { "n", NOW },             /* opt prefix for PLUS/MINUS */
 
-    { "minute", MINUTES,0 },    /* minutes multiplier */
-    { "minutes", MINUTES,1 },   /* (pluralized) */
-    { "hour", HOURS,0 },        /* hours ... */
-    { "hours", HOURS,1 },       /* (pluralized) */
-    { "day", DAYS,0 },          /* days ... */
-    { "days", DAYS,1 },         /* (pluralized) */
-    { "week", WEEKS,0 },        /* week ... */
-    { "weeks", WEEKS,1 },       /* (pluralized) */
-    { "month", MONTHS,0 },      /* month ... */
-    { "months", MONTHS,1 },     /* (pluralized) */
-    { "year", YEARS,0 },        /* year ... */
-    { "years", YEARS,1 },       /* (pluralized) */
-    { "jan", JAN,0 },
-    { "feb", FEB,0 },
-    { "mar", MAR,0 },
-    { "apr", APR,0 },
-    { "may", MAY,0 },
-    { "jun", JUN,0 },
-    { "jul", JUL,0 },
-    { "aug", AUG,0 },
-    { "sep", SEP,0 },
-    { "oct", OCT,0 },
-    { "nov", NOV,0 },
-    { "dec", DEC,0 },
-    { "january", JAN,0 },
-    { "february", FEB,0 },
-    { "march", MAR,0 },
-    { "april", APR,0 },
-    { "may", MAY,0 },
-    { "june", JUN,0 },
-    { "july", JUL,0 },
-    { "august", AUG,0 },
-    { "september", SEP,0 },
-    { "october", OCT,0 },
-    { "november", NOV,0 },
-    { "december", DEC,0 },
-    { "sunday", SUN, 0 },
-    { "sun", SUN, 0 },
-    { "monday", MON, 0 },
-    { "mon", MON, 0 },
-    { "tuesday", TUE, 0 },
-    { "tue", TUE, 0 },
-    { "wednesday", WED, 0 },
-    { "wed", WED, 0 },
-    { "thursday", THU, 0 },
-    { "thu", THU, 0 },
-    { "friday", FRI, 0 },
-    { "fri", FRI, 0 },
-    { "saturday", SAT, 0 },
-    { "sat", SAT, 0 },
+    { "second", SECONDS },    /* seconds multiplier */
+    { "seconds", SECONDS },   /* (pluralized) */
+    { "sec", SECONDS },       /* (shortened) */
+    { "s", SECONDS },         /* (shortened) */
+    { "minute", MINUTES },    /* minutes ... */
+    { "minutes", MINUTES },   /* (pluralized) */
+    { "min", MINUTES },       /* (shortened) */
+    { "hour", HOURS },        /* hours ... */
+    { "hours", HOURS },       /* (pluralized) */
+    { "hr", HOURS },          /* (shortened) */
+    { "h", HOURS },           /* (shortened) */
+    { "day", DAYS },          /* days ... */
+    { "days", DAYS },         /* (pluralized) */
+    { "d", DAYS },            /* (shortened) */
+    { "week", WEEKS },        /* week ... */
+    { "weeks", WEEKS },       /* (pluralized) */
+    { "wk", WEEKS },          /* (shortened) */
+    { "w", WEEKS },           /* (shortened) */
+    { "month", MONTHS },      /* month ... */
+    { "months", MONTHS },     /* (pluralized) */
+    { "mon", MONTHS },        /* (shortened) */
+    { "year", YEARS },        /* year ... */
+    { "years", YEARS },       /* (pluralized) */
+    { "yr", YEARS },          /* (shortened) */
+    { "y", YEARS },           /* (shortened) */
+
+    { "jan", JAN },
+    { "feb", FEB },
+    { "mar", MAR },
+    { "apr", APR },
+    { "may", MAY },
+    { "jun", JUN },
+    { "jul", JUL },
+    { "aug", AUG },
+    { "sep", SEP },
+    { "oct", OCT },
+    { "nov", NOV },
+    { "dec", DEC },
+    { "january", JAN },
+    { "february", FEB },
+    { "march", MAR },
+    { "april", APR },
+    { "may", MAY },
+    { "june", JUN },
+    { "july", JUL },
+    { "august", AUG },
+    { "september", SEP },
+    { "october", OCT },
+    { "november", NOV },
+    { "december", DEC },
+    { "sunday", SUN },
+    { "sun", SUN },
+    { "monday", MON },
+    { "mon", MON },
+    { "tuesday", TUE },
+    { "tue", TUE },
+    { "wednesday", WED },
+    { "wed", WED },
+    { "thursday", THU },
+    { "thu", THU },
+    { "friday", FRI },
+    { "fri", FRI },
+    { "saturday", SAT },
+    { "sat", SAT },
 } ;
 
 /* File scope variables */
@@ -140,14 +154,16 @@ static int need;    /* scanner - need to advance to next argument */
 static char *sc_token;  /* scanner - token buffer */
 static size_t sc_len;   /* scanner - length of token buffer */
 static int sc_tokid;    /* scanner - token id */
-static int sc_tokplur;  /* scanner - is token plural? */
 
+static int expecting_number[1] = { NUMBER };
+static int expecting_eof[1] = { EOF };
+static int expecting_plus_minus[2] = { PLUS, MINUS };
 /* Local functions */
 
 void usage () {
 }
 
-void panic () {
+void panic (char *message) {
 }
 
 /*
@@ -160,7 +176,6 @@ parse_token(char *arg)
 
     for (i=0; i<(sizeof Specials/sizeof Specials[0]); i++)
     if (strcasecmp(Specials[i].name, arg) == 0) {
-        sc_tokplur = Specials[i].plural;
         return sc_tokid = Specials[i].value;
     }
 
@@ -199,7 +214,6 @@ token(void)
     while (1) {
         memset(sc_token, 0, sc_len);
         sc_tokid = EOF;
-        sc_tokplur = 0;
         idx = 0;
 
         /* if we need to read another argument, walk along the argument list;
@@ -278,9 +292,14 @@ plonk(int tok)
  * expect() gets a token and dies most horribly if it's not the token we want
  */
 static void
-expect(int desired)
+expect(const int *desired)
 {
-    if (token() != desired) {
+    int next_token;
+    next_token = token();
+    for (int i = 0; i < sizeof(desired); i++) {
+        if (next_token == desired[i]) {
+            return;
+        }
         /* and we die here... */
         plonk(sc_tokid);
     }
@@ -298,30 +317,29 @@ plus_or_minus(struct tm *tm, int delay)
     expectplur = (delay != 1 && delay != -1) ? 1 : 0;
 
     switch (token()) {
-    case YEARS:
-        tm->tm_year += delay;
-        break;
-    case MONTHS:
-        tm->tm_mon += delay;
-        break;
-    case WEEKS:
-        delay *= 7;
-    case DAYS:
-        tm->tm_mday += delay;
-        break;
-    case HOURS:
-        tm->tm_hour += delay;
-        break;
-    case MINUTES:
-        tm->tm_min += delay;
-        break;
-    default:
-        plonk(sc_tokid);
-        break;
-    }
-
-    if (expectplur != sc_tokplur) {
-        warnx("pluralization is wrong");
+        case YEARS:
+            tm->tm_year += delay;
+            break;
+        case MONTHS:
+            tm->tm_mon += delay;
+            break;
+        case WEEKS:
+            delay *= 7;
+        case DAYS:
+            tm->tm_mday += delay;
+            break;
+        case HOURS:
+            tm->tm_hour += delay;
+            break;
+        case MINUTES:
+            tm->tm_min += delay;
+            break;
+        case SECONDS:
+            tm->tm_sec += delay;
+            break;
+        default:
+            plonk(sc_tokid);
+            break;
     }
 
     tm->tm_isdst = -1;
@@ -334,7 +352,7 @@ plus_or_minus(struct tm *tm, int delay)
 /*
  * plus() parses a now + time
  *
- *  at [NOW] PLUS NUMBER [MINUTES|HOURS|DAYS|WEEKS|MONTHS|YEARS]
+ *  at [NOW] [PLUS|MINUS] NUMBER [MINUTES|HOURS|DAYS|WEEKS|MONTHS|YEARS]
  *
  */
 static void
@@ -342,7 +360,7 @@ plus(struct tm *tm)
 {
     int delay;
 
-    expect(NUMBER);
+    expect(expecting_number);
 
     delay = atoi(sc_token);
     plus_or_minus(tm, delay);
@@ -357,7 +375,7 @@ minus(struct tm *tm)
 {
     int delay;
 
-    expect(NUMBER);
+    expect(expecting_number);
 
     delay = -atoi(sc_token);
     plus_or_minus(tm, delay);
@@ -381,7 +399,7 @@ tod(struct tm *tm)
      * a HHMM time, otherwise it's HH DOT MM time
      */
     if (token() == DOT) {
-        expect(NUMBER);
+        expect(expecting_number);
         minute = atoi(sc_token);
         if (minute > 59) {
             panic("garbled time");
@@ -522,7 +540,7 @@ month(struct tm *tm)
             /* do month mday [year]
             */
             mon = (sc_tokid-JAN);
-            expect(NUMBER);
+            expect(expecting_number);
             mday = atol(sc_token);
             if (token() == NUMBER) {
                 year = atol(sc_token);
@@ -564,10 +582,10 @@ month(struct tm *tm)
                 int sep;
 
                 sep = sc_tokid;
-                expect(NUMBER);
+                expect(expecting_number);
                 mday = atol(sc_token);
                 if (token() == sep) {
-                    expect(NUMBER);
+                    expect(expecting_number);
                     year = atol(sc_token);
                     token();
                 }
@@ -621,7 +639,6 @@ parsetime(int argc, char **argv)
     nowtime = *localtime(&nowtimer);
 
     runtime = nowtime;
-    runtime.tm_sec = 0;
     runtime.tm_isdst = 0;
 
     if (argc <= optind) {
@@ -632,20 +649,18 @@ parsetime(int argc, char **argv)
 
     switch (token()) {
         case NOW:
-            if (scc < 1) {
-                return nowtimer;
-            }
-            /* now is optional prefix for PLUS tree */
-            expect(PLUS);
+            /* now is optional prefix for PLUS or MINUS tree */
+            expect(expecting_plus_minus);
         case PLUS:
-            plus(&runtime);
-            break;
-
-            /* MINUS is different from PLUS in that NOW is not
-             * an optional prefix for it
-             */
+            if (sc_tokid == PLUS) {
+                plus(&runtime);
+            }
         case MINUS:
-            minus(&runtime);
+            if (sc_tokid == MINUS) {
+                minus(&runtime);
+            }
+            token();
+            month(&runtime);
             break;
         case NUMBER:
             tod(&runtime);
@@ -676,7 +691,7 @@ parsetime(int argc, char **argv)
             month(&runtime);
             break;
     } /* ugly case statement */
-    expect(EOF);
+    expect(expecting_eof);
 
     /* convert back to time_t
     */
@@ -687,9 +702,11 @@ parsetime(int argc, char **argv)
         panic("garbled time");
     }
 
-    if (nowtimer > runtimer) {
-        panic("trying to travel back in time");
-    }
-
     return runtimer;
 } /* parsetime */
+
+int main (int argc, char **argv) {
+    time_t result;
+    result = parsetime(argc, argv);
+    printf("%s", ctime(&result));
+}

@@ -3,17 +3,20 @@
 #include "parsetime.h"
 
 static PyObject *
-parsetime_parsetime(PyObject *self, PyObject *pyargs)
+parsetime_parsetime(PyObject *self, PyObject *pytimestring)
 {
-    char *argv[1];
-    const char *args;
+    int argc = 1;
+    char *argv[argc];
+    const char *timestring;
     time_t result;
 
-    if (!PyArg_ParseTuple(pyargs, "s", &args)) {
+    if (!PyArg_ParseTuple(pytimestring, "s", &timestring)) {
         return NULL;
     }
-    argv[0] = args;
-    result = parsetime(1, argv);
+
+    argv[0] = (char*)timestring;
+
+    result = parsetime(argc, argv);
     return Py_BuildValue("i", result);
 }
 

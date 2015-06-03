@@ -9,32 +9,23 @@ if sys.version < '2.2.3':
     DistributionMetadata.download_url = None
 
 parsetime = Extension('parsetime',
-                libraries=['l'],
-                define_macros=[('PYTHON_MODULE', None)],
-                sources=['at.c', 'panic.c', 'parsetime.c', 'perm.c', 'posixtm.c', 'y.tab.c', 'lex.yy.c'],
-                extra_compile_args=['-DHAVE_CONFIG_H',
-                                    '-DVERSION=\"3.1.14\"',
-                                    '-DETCDIR=\"/etc\"',
-                                    '-DLOADAVG_MX=0.8',
-                                    '-DDAEMON_USERNAME=\"daemon\"',
-                                    '-DDAEMON_GROUPNAME=\"daemon\"',
-                                    '-DLFILE=\"/var/spool/cron/atjobs/.SEQ\"'])
+                      define_macros=[('PYTHON_MODULE', None)],
+                      sources=['parsetime.c'])
 
 setup(name='python-parsetime',
-      version='1.5.2',
-      author='Daniel Pearson',
-      author_email='daniel@nanoo.org',
-      url='http://www.nanoo.org/parsetime/',
+      version='2.0.0',
+      author='Jimmy Ngo',
+      author_email='jingo@linkedin.com',
+      url='',
       download_url='https://github.com/jimmyngo/python-parsetime',
-      description='A parser for date/time strings.',
-      long_description='''
-ParseTime is a simple Python extension module that simply wraps the parsetime()
-function that is used internally by the familiar "at" command that is typically
-found on Unix systems. This allows a programmer to parse a complicated
-expression that represents a particular point in time.''',
+      description='Parse for at time strings.',
+      long_description='''Parsetime is a parser for string in the at
+      time format. It is a light Python wrapper around modified version
+      of parsetime from FreeBSD.
+      ''',
       classifiers=['Development Status :: 5 - Production/Stable',
             'Intended Audience :: Developers',
-            'License :: OSI Approved :: GNU General Public License (GPL)',
+            'License :: OSI Approved :: Apache Software License',
             'Natural Language :: English',
             'Programming Language :: C',
             'Programming Language :: Python',

@@ -10,13 +10,13 @@ if sys.version < '2.2.3':
 
 parsetime = Extension('parsetime',
                       define_macros=[('PYTHON_MODULE', None)],
-                      sources=['parsetime.c'])
+                      sources=['parsetimemodule.c', 'parsetime.c'])
 
 setup(name='python-parsetime',
       version='2.0.0',
       author='Jimmy Ngo',
       author_email='jingo@linkedin.com',
-      url='',
+      url='https://github.com/jimmyngo/python-parsetime',
       download_url='https://github.com/jimmyngo/python-parsetime',
       description='Parse for at time strings.',
       long_description='''Parsetime is a parser for string in the at

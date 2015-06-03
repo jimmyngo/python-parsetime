@@ -158,6 +158,9 @@ static int sc_tokid;    /* scanner - token id */
 static int expecting_number[1] = { NUMBER };
 static int expecting_eof[1] = { EOF };
 static int expecting_plus_minus[2] = { PLUS, MINUS };
+
+static int seconds_defined; /* If seconds has been set */
+
 /* Local functions */
 
 void usage () {
@@ -432,14 +435,14 @@ plusminus(struct tm *tm)
 static void
 tod(struct tm *tm)
 {
-    int hour, minute = 0;
+    int hour, minute, second = 0;
     int tlen;
 
     hour = atoi(sc_token);
     tlen = strlen(sc_token);
 
     /* first pick out the time of day - if it's 4 digits, we assume
-     * a HHMM time, otherwise it's HH DOT MM time
+     * a HHMM time, otherwise it's HH DOT MM time or HH DOT MM DOT SS
      */
     if (token() == DOT) {
         expect(expecting_number);
@@ -447,7 +450,15 @@ tod(struct tm *tm)
         if (minute > 59) {
             panic("garbled time");
         }
-        token();
+        if (token() == DOT) {
+            expect(expecting_number);
+            seconds_defined = 1;
+            second = atoi(sc_token);
+            if (second > 59) {
+                panic("garbled time");
+            }
+            token();
+        };
     }
     else if (tlen == 4) {
         minute = hour % 100;
@@ -455,6 +466,18 @@ tod(struct tm *tm)
             panic("garbled time");
         }
         hour = hour / 100;
+    }
+    else if (tlen == 6) {
+        seconds_defined = 1;
+        second = (hour % 100);
+        if (second > 59) {
+            panic("garbled time");
+        }
+        minute = (hour % 10000) / 100;
+        if (minute > 59) {
+            panic("garbled time");
+        }
+        hour = hour / 10000;
     }
 
     /* check if an AM or PM specifier was given
@@ -491,6 +514,7 @@ tod(struct tm *tm)
 
     tm->tm_hour = hour;
     tm->tm_min = minute;
+    tm->tm_sec = second;
     if (tm->tm_hour == 24) {
         tm->tm_hour = 0;
         tm->tm_mday++;
@@ -563,7 +587,9 @@ month(struct tm *tm)
     int tlen;
 
     /* Reset seconds if we're not dealing with NOW */
-    tm->tm_sec = 0;
+    if (seconds_defined == 0) {
+        tm->tm_sec = 0;
+    }
     switch (sc_tokid) {
         case TOMORROW:
             /* do something tomorrow */
@@ -683,6 +709,8 @@ parsetime(int argc, char **argv)
 
     runtime = nowtime;
     runtime.tm_isdst = 0;
+
+    seconds_defined = 0;
 
     if (argc <= optind) {
         usage();

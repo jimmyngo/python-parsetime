@@ -350,10 +350,8 @@ plus_or_minus(struct tm *tm, int delay)
 
 
 /*
- * plus() parses a now + time
- *
- *  at [NOW] [PLUS|MINUS] NUMBER [MINUTES|HOURS|DAYS|WEEKS|MONTHS|YEARS]
- *
+ * plus() parses a + time
+ *  at PLUS NUMBER [SECONDS|MINUTES|HOURS|DAYS|WEEKS|MONTHS|YEARS]
  */
 static void
 plus(struct tm *tm)
@@ -368,7 +366,7 @@ plus(struct tm *tm)
 
 
 /*
- * minus() is like plus but can not be used with NOW
+ * minus() is like plus
  */
 static void
 minus(struct tm *tm)
@@ -380,6 +378,29 @@ minus(struct tm *tm)
     delay = -atoi(sc_token);
     plus_or_minus(tm, delay);
 } /* minus */
+
+
+/*
+ * plus_minus() parses a now + time
+ *
+ *  at [NOW] [PLUS|MINUS] NUMBER [SECONDS|MINUTES|HOURS|DAYS|WEEKS|MONTHS|YEARS]
+ *
+ */
+static void
+plusminus(struct tm *tm)
+{
+    while (sc_tokid != EOF) {
+        switch(sc_tokid) {
+            case PLUS:
+                plus(tm);
+                break;
+            case MINUS:
+                minus(tm);
+                break;
+        }
+        token();
+    }
+}
 
 
 /*
@@ -521,10 +542,8 @@ month(struct tm *tm)
 
     switch (sc_tokid) {
         case PLUS:
-            plus(tm);
-            break;
         case MINUS:
-            minus(tm);
+            plusminus(tm);
             break;
 
         case TOMORROW:
@@ -652,15 +671,8 @@ parsetime(int argc, char **argv)
             /* now is optional prefix for PLUS or MINUS tree */
             expect(expecting_plus_minus);
         case PLUS:
-            if (sc_tokid == PLUS) {
-                plus(&runtime);
-            }
         case MINUS:
-            if (sc_tokid == MINUS) {
-                minus(&runtime);
-            }
-            token();
-            month(&runtime);
+            plusminus(&runtime);
             break;
         case NUMBER:
             tod(&runtime);

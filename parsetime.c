@@ -33,9 +33,6 @@
  *                                   \PLUS NUMBER MINUTES|HOURS|DAYS|WEEKS/
  */
 
-#include <sys/cdefs.h>
-__FBSDID("$FreeBSD$");
-
 /* System Headers */
 
 #include <sys/types.h>
@@ -47,20 +44,16 @@ __FBSDID("$FreeBSD$");
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#ifndef __FreeBSD__
 #include <getopt.h>
-#endif
 
 /* Local headers */
-
-#include "at.h"
-#include "panic.h"
 #include "parsetime.h"
 
 
 /* Structures and unions */
 
-enum {	/* symbols */
+/* symbols */
+enum {
     MIDNIGHT, NOON, TEATIME,
     PM, AM, TOMORROW, TODAY, NOW,
     MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS,
@@ -70,34 +63,33 @@ enum {	/* symbols */
     SUN, MON, TUE, WED, THU, FRI, SAT
     };
 
-/* parse translation table - table driven parsers can be your FRIEND!
- */
+/* parse translation table - table driven parsers can be your FRIEND!  */
 static const struct {
-    const char *name;	/* token name */
-    int value;	/* token id */
-    int plural;	/* is this plural? */
+    const char *name;   /* token name */
+    int value;          /* token id */
+    int plural;         /* is this plural? */
 } Specials[] = {
-    { "midnight", MIDNIGHT,0 },	/* 00:00:00 of today or tomorrow */
-    { "noon", NOON,0 },		/* 12:00:00 of today or tomorrow */
-    { "teatime", TEATIME,0 },	/* 16:00:00 of today or tomorrow */
-    { "am", AM,0 },		/* morning times for 0-12 clock */
-    { "pm", PM,0 },		/* evening times for 0-12 clock */
-    { "tomorrow", TOMORROW,0 },	/* execute 24 hours from time */
-    { "today", TODAY, 0 },	/* execute today - don't advance time */
-    { "now", NOW,0 },		/* opt prefix for PLUS */
+    { "midnight", MIDNIGHT,0 }, /* 00:00:00 of today or tomorrow */
+    { "noon", NOON,0 },         /* 12:00:00 of today or tomorrow */
+    { "teatime", TEATIME,0 },   /* 16:00:00 of today or tomorrow */
+    { "am", AM,0 },             /* morning times for 0-12 clock */
+    { "pm", PM,0 },             /* evening times for 0-12 clock */
+    { "tomorrow", TOMORROW,0 }, /* execute 24 hours from time */
+    { "today", TODAY, 0 },      /* execute today - don't advance time */
+    { "now", NOW,0 },           /* opt prefix for PLUS */
 
-    { "minute", MINUTES,0 },	/* minutes multiplier */
-    { "minutes", MINUTES,1 },	/* (pluralized) */
-    { "hour", HOURS,0 },	/* hours ... */
-    { "hours", HOURS,1 },	/* (pluralized) */
-    { "day", DAYS,0 },		/* days ... */
-    { "days", DAYS,1 },		/* (pluralized) */
-    { "week", WEEKS,0 },	/* week ... */
-    { "weeks", WEEKS,1 },	/* (pluralized) */
-    { "month", MONTHS,0 },	/* month ... */
-    { "months", MONTHS,1 },	/* (pluralized) */
-    { "year", YEARS,0 },	/* year ... */
-    { "years", YEARS,1 },	/* (pluralized) */
+    { "minute", MINUTES,0 },    /* minutes multiplier */
+    { "minutes", MINUTES,1 },   /* (pluralized) */
+    { "hour", HOURS,0 },        /* hours ... */
+    { "hours", HOURS,1 },       /* (pluralized) */
+    { "day", DAYS,0 },          /* days ... */
+    { "days", DAYS,1 },         /* (pluralized) */
+    { "week", WEEKS,0 },        /* week ... */
+    { "weeks", WEEKS,1 },       /* (pluralized) */
+    { "month", MONTHS,0 },      /* month ... */
+    { "months", MONTHS,1 },     /* (pluralized) */
+    { "year", YEARS,0 },        /* year ... */
+    { "years", YEARS,1 },       /* (pluralized) */
     { "jan", JAN,0 },
     { "feb", FEB,0 },
     { "mar", MAR,0 },
@@ -140,17 +132,23 @@ static const struct {
 
 /* File scope variables */
 
-static char **scp;	/* scanner - pointer at arglist */
-static char scc;	/* scanner - count of remaining arguments */
-static char *sct;	/* scanner - next char pointer in current argument */
-static int need;	/* scanner - need to advance to next argument */
+static char **scp;  /* scanner - pointer at arglist */
+static char scc;    /* scanner - count of remaining arguments */
+static char *sct;   /* scanner - next char pointer in current argument */
+static int need;    /* scanner - need to advance to next argument */
 
-static char *sc_token;	/* scanner - token buffer */
+static char *sc_token;  /* scanner - token buffer */
 static size_t sc_len;   /* scanner - length of token buffer */
-static int sc_tokid;	/* scanner - token id */
-static int sc_tokplur;	/* scanner - is token plural? */
+static int sc_tokid;    /* scanner - token id */
+static int sc_tokplur;  /* scanner - is token plural? */
 
 /* Local functions */
+
+void usage () {
+}
+
+void panic () {
+}
 
 /*
  * parse a token, checking if it's something special to us
@@ -161,10 +159,10 @@ parse_token(char *arg)
     size_t i;
 
     for (i=0; i<(sizeof Specials/sizeof Specials[0]); i++)
-	if (strcasecmp(Specials[i].name, arg) == 0) {
-	    sc_tokplur = Specials[i].plural;
-	    return sc_tokid = Specials[i].value;
-	}
+    if (strcasecmp(Specials[i].name, arg) == 0) {
+        sc_tokplur = Specials[i].plural;
+        return sc_tokid = Specials[i].value;
+    }
 
     /* not special - must be some random id */
     return ID;
@@ -181,11 +179,13 @@ init_scanner(int argc, char **argv)
     scc = argc;
     need = 1;
     sc_len = 1;
-    while (argc-- > 0)
-	sc_len += strlen(*argv++);
+    while (argc-- > 0) {
+        sc_len += strlen(*argv++);
+    }
 
-    if ((sc_token = malloc(sc_len)) == NULL)
-	errx(EXIT_FAILURE, "virtual memory exhausted");
+    if ((sc_token = malloc(sc_len)) == NULL) {
+        errx(EXIT_FAILURE, "virtual memory exhausted");
+    }
 } /* init_scanner */
 
 /*
@@ -197,61 +197,69 @@ token(void)
     int idx;
 
     while (1) {
-	memset(sc_token, 0, sc_len);
-	sc_tokid = EOF;
-	sc_tokplur = 0;
-	idx = 0;
+        memset(sc_token, 0, sc_len);
+        sc_tokid = EOF;
+        sc_tokplur = 0;
+        idx = 0;
 
-	/* if we need to read another argument, walk along the argument list;
-	 * when we fall off the arglist, we'll just return EOF forever
-	 */
-	if (need) {
-	    if (scc < 1)
-		return sc_tokid;
-	    sct = *scp;
-	    scp++;
-	    scc--;
-	    need = 0;
-	}
-	/* eat whitespace now - if we walk off the end of the argument,
-	 * we'll continue, which puts us up at the top of the while loop
-	 * to fetch the next argument in
-	 */
-	while (isspace(*sct))
-	    ++sct;
-	if (!*sct) {
-	    need = 1;
-	    continue;
-	}
+        /* if we need to read another argument, walk along the argument list;
+         * when we fall off the arglist, we'll just return EOF forever
+         */
+        if (need) {
+            if (scc < 1)
+            return sc_tokid;
+            sct = *scp;
+            scp++;
+            scc--;
+            need = 0;
+        }
+        /* eat whitespace now - if we walk off the end of the argument,
+         * we'll continue, which puts us up at the top of the while loop
+         * to fetch the next argument in
+         */
+        while (isspace(*sct)) {
+            ++sct;
+        }
+        if (!*sct) {
+            need = 1;
+            continue;
+        }
 
-	/* preserve the first character of the new token
-	 */
-	sc_token[0] = *sct++;
+        /* preserve the first character of the new token
+         */
+        sc_token[0] = *sct++;
 
-	/* then see what it is
-	 */
-	if (isdigit(sc_token[0])) {
-	    while (isdigit(*sct))
-		sc_token[++idx] = *sct++;
-	    sc_token[++idx] = 0;
-	    return sc_tokid = NUMBER;
-	}
-	else if (isalpha(sc_token[0])) {
-	    while (isalpha(*sct))
-		sc_token[++idx] = *sct++;
-	    sc_token[++idx] = 0;
-	    return parse_token(sc_token);
-	}
-	else if (sc_token[0] == ':' || sc_token[0] == '.')
-	    return sc_tokid = DOT;
-	else if (sc_token[0] == '+')
-	    return sc_tokid = PLUS;
-	else if (sc_token[0] == '-')
-	    return sc_tokid = MINUS;
-	else if (sc_token[0] == '/')
-	    return sc_tokid = SLASH;
-	else
-	    return sc_tokid = JUNK;
+        /* then see what it is
+         */
+        if (isdigit(sc_token[0])) {
+            while (isdigit(*sct)) {
+                sc_token[++idx] = *sct++;
+            }
+            sc_token[++idx] = 0;
+            return sc_tokid = NUMBER;
+        }
+        else if (isalpha(sc_token[0])) {
+            while (isalpha(*sct)) {
+                sc_token[++idx] = *sct++;
+            }
+            sc_token[++idx] = 0;
+            return parse_token(sc_token);
+        }
+        else if (sc_token[0] == ':' || sc_token[0] == '.') {
+            return sc_tokid = DOT;
+        }
+        else if (sc_token[0] == '+') {
+            return sc_tokid = PLUS;
+        }
+        else if (sc_token[0] == '-') {
+            return sc_tokid = MINUS;
+        }
+        else if (sc_token[0] == '/') {
+            return sc_tokid = SLASH;
+        }
+        else {
+            return sc_tokid = JUNK;
+        }
     } /* while (1) */
 } /* token */
 
@@ -262,19 +270,20 @@ token(void)
 static void
 plonk(int tok)
 {
-    panic((tok == EOF) ? "incomplete time"
-		       : "garbled time");
+    panic((tok == EOF) ? "incomplete time" : "garbled time");
 } /* plonk */
 
 
-/* 
+/*
  * expect() gets a token and dies most horribly if it's not the token we want
  */
 static void
 expect(int desired)
 {
-    if (token() != desired)
-	plonk(sc_tokid);	/* and we die here... */
+    if (token() != desired) {
+        /* and we die here... */
+        plonk(sc_tokid);
+    }
 } /* expect */
 
 
@@ -290,33 +299,35 @@ plus_or_minus(struct tm *tm, int delay)
 
     switch (token()) {
     case YEARS:
-	    tm->tm_year += delay;
-	    break;
+        tm->tm_year += delay;
+        break;
     case MONTHS:
-	    tm->tm_mon += delay;
-	    break;
+        tm->tm_mon += delay;
+        break;
     case WEEKS:
-	    delay *= 7;
+        delay *= 7;
     case DAYS:
-	    tm->tm_mday += delay;
-	    break;
+        tm->tm_mday += delay;
+        break;
     case HOURS:
-	    tm->tm_hour += delay;
-	    break;
+        tm->tm_hour += delay;
+        break;
     case MINUTES:
-	    tm->tm_min += delay;
-	    break;
+        tm->tm_min += delay;
+        break;
     default:
-    	    plonk(sc_tokid);
-	    break;
+        plonk(sc_tokid);
+        break;
     }
 
-    if (expectplur != sc_tokplur)
-	warnx("pluralization is wrong");
+    if (expectplur != sc_tokplur) {
+        warnx("pluralization is wrong");
+    }
 
     tm->tm_isdst = -1;
-    if (mktime(tm) < 0)
-	plonk(sc_tokid);
+    if (mktime(tm) < 0) {
+        plonk(sc_tokid);
+    }
 } /* plus_or_minus */
 
 
@@ -370,52 +381,58 @@ tod(struct tm *tm)
      * a HHMM time, otherwise it's HH DOT MM time
      */
     if (token() == DOT) {
-	expect(NUMBER);
-	minute = atoi(sc_token);
-	if (minute > 59)
-	    panic("garbled time");
-	token();
+        expect(NUMBER);
+        minute = atoi(sc_token);
+        if (minute > 59) {
+            panic("garbled time");
+        }
+        token();
     }
     else if (tlen == 4) {
-	minute = hour%100;
-	if (minute > 59)
-	    panic("garbled time");
-	hour = hour/100;
+        minute = hour % 100;
+        if (minute > 59) {
+            panic("garbled time");
+        }
+        hour = hour / 100;
     }
 
     /* check if an AM or PM specifier was given
      */
     if (sc_tokid == AM || sc_tokid == PM) {
-	if (hour > 12)
-	    panic("garbled time");
+        if (hour > 12) {
+            panic("garbled time");
+        }
 
-	if (sc_tokid == PM) {
-	    if (hour != 12)	/* 12:xx PM is 12:xx, not 24:xx */
-			hour += 12;
-	} else {
-	    if (hour == 12)	/* 12:xx AM is 00:xx, not 12:xx */
-			hour = 0;
-	}
-	token();
+        if (sc_tokid == PM) {
+            /* 12:xx PM is 12:xx, not 24:xx */
+            if (hour != 12) { 
+                hour += 12;
+            }
+        } else {
+            /* 12:xx AM is 00:xx, not 12:xx */
+            if (hour == 12) {
+                hour = 0;
+            }
+        }
+        token();
+    } else if (hour > 23) {
+        panic("garbled time");
     }
-    else if (hour > 23)
-	panic("garbled time");
 
     /* if we specify an absolute time, we don't want to bump the day even
      * if we've gone past that time - but if we're specifying a time plus
      * a relative offset, it's okay to bump things
      */
-    if ((sc_tokid == EOF || sc_tokid == PLUS || sc_tokid == MINUS) && 
-	tm->tm_hour > hour) {
-	tm->tm_mday++;
-	tm->tm_wday++;
+    if ((sc_tokid == EOF || sc_tokid == PLUS || sc_tokid == MINUS) && tm->tm_hour > hour) {
+        tm->tm_mday++;
+        tm->tm_wday++;
     }
 
     tm->tm_hour = hour;
     tm->tm_min = minute;
     if (tm->tm_hour == 24) {
-	tm->tm_hour = 0;
-	tm->tm_mday++;
+        tm->tm_hour = 0;
+        tm->tm_mday++;
     }
 } /* tod */
 
@@ -432,34 +449,39 @@ assign_date(struct tm *tm, long mday, long mon, long year)
     * We may be given the year in 2 digit, 4 digit, or tm_year format.
     */
     if (year != -1) {
-	if (year >= 1900)
-		year -= 1900;   /* convert from 4 digit year */
-	else if (year < 100) {
-		/* convert from 2 digit year */
-		struct tm *lt;
-		time_t now;
+        if (year >= 1900) {
+            /* convert from 4 digit year */
+            year -= 1900;
+        } else if (year < 100) {
+            /* convert from 2 digit year */
+            struct tm *lt;
+            time_t now;
 
-		time(&now);
-		lt = localtime(&now);
+            time(&now);
+            lt = localtime(&now);
 
-		/* Convert to tm_year assuming current century */
-		year += (lt->tm_year / 100) * 100;
+            /* Convert to tm_year assuming current century */
+            year += (lt->tm_year / 100) * 100;
 
-		if (year == lt->tm_year - 1) year++;
-		else if (year < lt->tm_year)
-			year += 100;    /* must be in next century */
-	}
+            if (year == lt->tm_year - 1) {
+                year++;
+            } else if (year < lt->tm_year) {
+                /* must be in next century */
+                year += 100;
+            }
+        }
     }
 
-    if (year < 0 &&
-	(tm->tm_mon > mon ||(tm->tm_mon == mon && tm->tm_mday > mday)))
-	year = tm->tm_year + 1;
+    if (year < 0 && (tm->tm_mon > mon ||(tm->tm_mon == mon && tm->tm_mday > mday))) {
+        year = tm->tm_year + 1;
+    }
 
     tm->tm_mday = mday;
     tm->tm_mon = mon;
 
-    if (year >= 0)
-	tm->tm_year = year;
+    if (year >= 0) {
+        tm->tm_year = year;
+    }
 } /* assign_date */
 
 
@@ -480,104 +502,104 @@ month(struct tm *tm)
     int tlen;
 
     switch (sc_tokid) {
-    case PLUS:
-	    plus(tm);
-	    break;
-    case MINUS:
-	    minus(tm);
-	    break;
+        case PLUS:
+            plus(tm);
+            break;
+        case MINUS:
+            minus(tm);
+            break;
 
-    case TOMORROW:
-	    /* do something tomorrow */
-	    tm->tm_mday ++;
-	    tm->tm_wday ++;
-    case TODAY:	/* force ourselves to stay in today - no further processing */
-	    token();
-	    break;
+        case TOMORROW:
+            /* do something tomorrow */
+            tm->tm_mday ++;
+            tm->tm_wday ++;
+        case TODAY:	/* force ourselves to stay in today - no further processing */
+            token();
+            break;
 
-    case JAN: case FEB: case MAR: case APR: case MAY: case JUN:
-    case JUL: case AUG: case SEP: case OCT: case NOV: case DEC:
-	    /* do month mday [year]
-	     */
-	    mon = (sc_tokid-JAN);
-	    expect(NUMBER);
-	    mday = atol(sc_token);
-	    if (token() == NUMBER) {
-		year = atol(sc_token);
-		token();
-	    }
-	    assign_date(tm, mday, mon, year);
-	    break;
+        case JAN: case FEB: case MAR: case APR: case MAY: case JUN:
+        case JUL: case AUG: case SEP: case OCT: case NOV: case DEC:
+            /* do month mday [year]
+            */
+            mon = (sc_tokid-JAN);
+            expect(NUMBER);
+            mday = atol(sc_token);
+            if (token() == NUMBER) {
+                year = atol(sc_token);
+                token();
+            }
+            assign_date(tm, mday, mon, year);
+            break;
 
-    case SUN: case MON: case TUE:
-    case WED: case THU: case FRI:
-    case SAT:
-	    /* do a particular day of the week
-	     */
-	    wday = (sc_tokid-SUN);
+        case SUN: case MON: case TUE:
+        case WED: case THU: case FRI:
+        case SAT:
+            /* do a particular day of the week
+            */
+            wday = (sc_tokid-SUN);
 
-	    mday = tm->tm_mday;
+            mday = tm->tm_mday;
 
-	    /* if this day is < today, then roll to next week
-	     */
-	    if (wday < tm->tm_wday)
-		mday += 7 - (tm->tm_wday - wday);
-	    else
-		mday += (wday - tm->tm_wday);
+            /* if this day is < today, then roll to next week
+            */
+            if (wday < tm->tm_wday) {
+                mday += 7 - (tm->tm_wday - wday);
+            } else {
+                mday += (wday - tm->tm_wday);
+            }
 
-	    tm->tm_wday = wday;
+            tm->tm_wday = wday;
 
-	    assign_date(tm, mday, tm->tm_mon, tm->tm_year);
-	    break;
+            assign_date(tm, mday, tm->tm_mon, tm->tm_year);
+            break;
 
-    case NUMBER:
-	    /* get numeric MMDDYY, mm/dd/yy, or dd.mm.yy
-	     */
-	    tlen = strlen(sc_token);
-	    mon = atol(sc_token);
-	    token();
+        case NUMBER:
+            /* get numeric MMDDYY, mm/dd/yy, or dd.mm.yy
+            */
+            tlen = strlen(sc_token);
+            mon = atol(sc_token);
+            token();
 
-	    if (sc_tokid == SLASH || sc_tokid == DOT) {
-		int sep;
+            if (sc_tokid == SLASH || sc_tokid == DOT) {
+                int sep;
 
-		sep = sc_tokid;
-		expect(NUMBER);
-		mday = atol(sc_token);
-		if (token() == sep) {
-		    expect(NUMBER);
-		    year = atol(sc_token);
-		    token();
-		}
+                sep = sc_tokid;
+                expect(NUMBER);
+                mday = atol(sc_token);
+                if (token() == sep) {
+                    expect(NUMBER);
+                    year = atol(sc_token);
+                    token();
+                }
 
-		/* flip months and days for European timing
-		 */
-		if (sep == DOT) {
-		    int x = mday;
-		    mday = mon;
-		    mon = x;
-		}
-	    }
-	    else if (tlen == 6 || tlen == 8) {
-		if (tlen == 8) {
-		    year = (mon % 10000) - 1900;
-		    mon /= 10000;
-		}
-		else {
-		    year = mon % 100;
-		    mon /= 100;
-		}
-		mday = mon % 100;
-		mon /= 100;
-	    }
-	    else
-		panic("garbled time");
+                /* flip months and days for European timing
+                */
+                if (sep == DOT) {
+                    int x = mday;
+                    mday = mon;
+                    mon = x;
+                }
+            } else if (tlen == 6 || tlen == 8) {
+                if (tlen == 8) {
+                    year = (mon % 10000) - 1900;
+                    mon /= 10000;
+                } else {
+                    year = mon % 100;
+                    mon /= 100;
+                }
+                mday = mon % 100;
+                mon /= 100;
+            } else {
+                panic("garbled time");
+            }
 
-	    mon--;
-	    if (mon < 0 || mon > 11 || mday < 1 || mday > 31)
-		panic("garbled time");
+            mon--;
+            if (mon < 0 || mon > 11 || mday < 1 || mday > 31) {
+                panic("garbled time");
+            }
 
-	    assign_date(tm, mday, mon, year);
-	    break;
+            assign_date(tm, mday, mon, year);
+            break;
     } /* case */
 } /* month */
 
@@ -602,69 +624,72 @@ parsetime(int argc, char **argv)
     runtime.tm_sec = 0;
     runtime.tm_isdst = 0;
 
-    if (argc <= optind)
-	usage();
+    if (argc <= optind) {
+        usage();
+    }
 
     init_scanner(argc-optind, argv+optind);
 
     switch (token()) {
-    case NOW:	
-	    if (scc < 1) {
-		return nowtimer;
-	    }
-	    /* now is optional prefix for PLUS tree */
-	    expect(PLUS);
-    case PLUS:
-	    plus(&runtime);
-	    break;
+        case NOW:
+            if (scc < 1) {
+                return nowtimer;
+            }
+            /* now is optional prefix for PLUS tree */
+            expect(PLUS);
+        case PLUS:
+            plus(&runtime);
+            break;
 
-	    /* MINUS is different from PLUS in that NOW is not
-	     * an optional prefix for it
-	     */
-    case MINUS:
-	    minus(&runtime);
-	    break;
-    case NUMBER:
-	    tod(&runtime);
-	    month(&runtime);
-	    break;
+            /* MINUS is different from PLUS in that NOW is not
+             * an optional prefix for it
+             */
+        case MINUS:
+            minus(&runtime);
+            break;
+        case NUMBER:
+            tod(&runtime);
+            month(&runtime);
+            break;
 
-	    /* evil coding for TEATIME|NOON|MIDNIGHT - we've initialised
-	     * hr to zero up above, then fall into this case in such a
-	     * way so we add +12 +4 hours to it for teatime, +12 hours
-	     * to it for noon, and nothing at all for midnight, then
-	     * set our runtime to that hour before leaping into the
-	     * month scanner
-	     */
-    case TEATIME:
-	    hr += 4;
-    case NOON:
-	    hr += 12;
-    case MIDNIGHT:
-	    if (runtime.tm_hour >= hr) {
-		runtime.tm_mday++;
-		runtime.tm_wday++;
-	    }
-	    runtime.tm_hour = hr;
-	    runtime.tm_min = 0;
-	    token();
-	    /* FALLTHROUGH to month setting */
-    default:
-	    month(&runtime);
-	    break;
+            /* evil coding for TEATIME|NOON|MIDNIGHT - we've initialised
+             * hr to zero up above, then fall into this case in such a
+             * way so we add +12 +4 hours to it for teatime, +12 hours
+             * to it for noon, and nothing at all for midnight, then
+             * set our runtime to that hour before leaping into the
+             * month scanner
+             */
+        case TEATIME:
+            hr += 4;
+        case NOON:
+            hr += 12;
+        case MIDNIGHT:
+            if (runtime.tm_hour >= hr) {
+                runtime.tm_mday++;
+                runtime.tm_wday++;
+            }
+            runtime.tm_hour = hr;
+            runtime.tm_min = 0;
+            token();
+            /* FALLTHROUGH to month setting */
+        default:
+            month(&runtime);
+            break;
     } /* ugly case statement */
     expect(EOF);
 
     /* convert back to time_t
-     */
+    */
     runtime.tm_isdst = -1;
     runtimer = mktime(&runtime);
 
-    if (runtimer < 0)
-	panic("garbled time");
+    if (runtimer < 0) {
+        panic("garbled time");
+    }
 
-    if (nowtimer > runtimer)
-	panic("trying to travel back in time");
+    if (nowtimer > runtimer) {
+        panic("trying to travel back in time");
+    }
 
     return runtimer;
 } /* parsetime */

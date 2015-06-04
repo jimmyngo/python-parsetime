@@ -23,6 +23,7 @@ setup(name='python-parsetime',
       time format. It is a light Python wrapper around modified version
       of parsetime from FreeBSD.
       ''',
+      license='Apache License 2.0',
       classifiers=['Development Status :: 5 - Production/Stable',
             'Intended Audience :: Developers',
             'License :: OSI Approved :: Apache Software License',

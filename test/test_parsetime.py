@@ -99,6 +99,16 @@ class ParsetimeTest(unittest.TestCase):
         self.assertEquals(self.rtime + 3600 * 24 * 10 * 365
                                      + 3 * 24 * 3600, ptime)
 
+    def test_decimal(self):
+        ptime = parsetime('5:00 AM May 5 2003 + 1.5 min')
+        self.assertEquals(self.rtime + 90, ptime)
+
+        ptime = parsetime('5:00 AM May 5 2003 + 1.5 hour')
+        self.assertEquals(self.rtime + 90 * 60, ptime)
+
+        ptime = parsetime('5:00 AM May 5 2003 + 6.25days')
+        self.assertEquals(self.rtime + 24 * 6.25 * 3600, ptime)
+
     def test_now(self):
         ptime = parsetime('now')
         now = int(time.time())

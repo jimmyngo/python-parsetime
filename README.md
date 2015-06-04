@@ -4,7 +4,7 @@ python-parsetime
 python-parsetime is a simple Python wrapper around parsetime.c from UNIX "at" command.
 This implementation was taken from FreeBSD with modifications made to handle more cases.
 
-INSTALLATION
+Installation
 ============
 
 To build the C version 'parsetime' for use on the command line:
@@ -19,7 +19,7 @@ This package should otherwise be available in PyPI and can be install via:
 
     pip instll python-parsetime
 
-USAGE
+Usage
 =====
 The parsetime module contains a single function `parsetime`. The `parsetime`
 function takes a single string argument for the time specification string and
@@ -33,8 +33,10 @@ returns the evaluated time in epoch seconds.
     'Mon Nov 11 11:00:00 1918'
     >>> time.ctime(parsetime.parsetime('5PM Jan 11 2015 + 20min'))
     'Sun Jan 11 17:20:00 2015'
+    >>> time.ctime(parsetime.parsetime('5PM Jan 11 2015 + 20.5min'))
+    'Sun Jan 11 17:20:30 2015'
 
-CREDITS
+Credits
 =======
 parsetime.c was copied from FreeBSD's "at" implementation.
 

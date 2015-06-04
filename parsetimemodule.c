@@ -5,7 +5,7 @@
 static PyObject *
 parsetime_parsetime(PyObject *self, PyObject *pytimestring)
 {
-    int argc = 1;
+    int argc = 2;
     char *argv[argc];
     const char *timestring;
     time_t result;
@@ -14,7 +14,8 @@ parsetime_parsetime(PyObject *self, PyObject *pytimestring)
         return NULL;
     }
 
-    argv[0] = (char*)timestring;
+    argv[0] = "parsetime";
+    argv[1] = (char*)timestring;
 
     result = parsetime(argc, argv);
     return Py_BuildValue("i", result);

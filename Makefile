@@ -17,11 +17,14 @@ parsetime.so:
 	$(CC) -c $(CFLAGS) $*.c
 
 clean:
-	rm -f parsetime.so parsetime
+	rm -f parsetime.so parsetime test/parsetime.so
 
 extension: parsetime.so
 
 test: test_parsetime
 
-test_parsetime:
+test/parsetime.so:
+	ln parsetime.so test/parsetime.so
+
+test_parsetime: extension test/parsetime.so
 	python test/test_parsetime.py

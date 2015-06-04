@@ -336,6 +336,7 @@ plus_or_minus(struct tm *tm, float delay)
             }
         case WEEKS:
             delay *= 604800;
+            break;
         case DAYS:
             delay *= 86400;
             break;
@@ -346,7 +347,6 @@ plus_or_minus(struct tm *tm, float delay)
             delay *= 60;
             break;
         case SECONDS:
-            tm->tm_sec += delay;
             break;
         default:
             plonk(sc_tokid);
@@ -420,7 +420,9 @@ plusminus(struct tm *tm)
                 }
 
                 plus_or_minus(tm, delay);
-                free(float_value);
+                if (float_len > 0) {
+                    free(float_value);
+                }
                 break;
         }
         token();
@@ -435,7 +437,9 @@ plusminus(struct tm *tm)
 static void
 tod(struct tm *tm)
 {
-    int hour, minute, second = 0;
+    int hour;
+    int minute = 0;
+    int second = 0;
     int tlen;
 
     hour = atoi(sc_token);
@@ -682,6 +686,8 @@ month(struct tm *tm)
 
             assign_date(tm, mday, mon, year);
             break;
+    } /* case */
+    switch (sc_tokid) {
         case PLUS:
         case MINUS:
             plusminus(tm);

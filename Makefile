@@ -1,26 +1,23 @@
 CC 		= cc
 CFLAGS 		= -Wall
 
-SRCS   	= parsetime.c
+CSRCS 		= parsetime.c
+COBJS 		= $(CSRCS:.c=.o)
 
-.PHONY: all install clean dist distclean
+.PHONY: all install clean dist distclean parsetime extension
 
 all: parsetime extension
 
-parsetime:
-	$(CC) -o parsetime $(CFLAGS) $(SRCS)
+$(COBJS): %.o : %.h
 
-parsetime.so:
+parsetime: $(COBJS)
+	$(CC) -o $@ $(CFLAGS) $^
+
+# Build extension
+extension: $(COJBS)
 	python setup.py build_ext -i
 
-.c.o:
-	$(CC) -c $(CFLAGS) $*.c
-
-clean:
-	rm -f parsetime.so parsetime test/parsetime.so
-
-extension: parsetime.so
-
+# Copy and test extension
 test: test_parsetime
 
 test/parsetime.so:
@@ -28,3 +25,10 @@ test/parsetime.so:
 
 test_parsetime: extension test/parsetime.so
 	python test/test_parsetime.py
+
+# Clean
+clean:
+	rm -f parsetime.so parsetime test/parsetime.so
+
+.depend: $(CSRCS)
+	$(CC) $(CFLAGS) -MM $(CSRCS) > .depend

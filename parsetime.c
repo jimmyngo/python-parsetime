@@ -26,11 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *  at [NOW] PLUS NUMBER MINUTES|HOURS|DAYS|WEEKS
- *     /NUMBER [DOT NUMBER] [AM|PM]\ /[MONTH NUMBER [NUMBER]]             \
- *     |NOON                       | |[TOMORROW]                          |
- *     |MIDNIGHT                   | |[DAY OF WEEK]                       |
- *     \TEATIME                    / |NUMBER [SLASH NUMBER [SLASH NUMBER]]|
- *                                   \PLUS NUMBER MINUTES|HOURS|DAYS|WEEKS/
+ *     /NUMBER [DOT NUMBER] [AM|PM] [UTC]\ /[MONTH NUMBER [NUMBER]]             \
+ *     |NOON                             | |[TOMORROW]                          |
+ *     |MIDNIGHT                         | |[DAY OF WEEK]                       |
+ *     \TEATIME                          / |NUMBER [SLASH NUMBER [SLASH NUMBER]]|
+ *                                         \PLUS NUMBER MINUTES|HOURS|DAYS|WEEKS/
  */
 
 /* System Headers */
@@ -55,7 +55,7 @@
 /* symbols */
 enum {
     MIDNIGHT, NOON, TEATIME,
-    PM, AM, TOMORROW, TODAY, NOW,
+    PM, AM, UTC, TOMORROW, TODAY, NOW,
     SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS,
     NUMBER, PLUS, MINUS, DOT, SLASH, ID, JUNK,
     JAN, FEB, MAR, APR, MAY, JUN,
@@ -73,6 +73,7 @@ static const struct {
     { "teatime", TEATIME },   /* 16:00:00 of today or tomorrow */
     { "am", AM },             /* morning times for 0-12 clock */
     { "pm", PM },             /* evening times for 0-12 clock */
+    { "utc", UTC},            /* UTC timezone */
     { "tomorrow", TOMORROW }, /* execute 24 hours from time */
     { "today", TODAY },       /* execute today - don't advance time */
     { "now", NOW },           /* opt prefix for PLUS/MINUS */
@@ -432,7 +433,7 @@ plusminus(struct tm *tm)
 
 /*
  * tod() computes the time of day
- *     [NUMBER [DOT NUMBER] [AM|PM]]
+ *     [NUMBER [DOT NUMBER] [AM|PM]] [UTC]
  */
 static void
 tod(struct tm *tm)
@@ -486,7 +487,7 @@ tod(struct tm *tm)
 
     /* check if an AM or PM specifier was given
      */
-    if (sc_tokid == AM || sc_tokid == PM) {
+    if (sc_tokid == AM || sc_tokid == PM || sc_tokid == UTC) {
         if (hour > 12) {
             panic("garbled time");
         }
@@ -502,7 +503,15 @@ tod(struct tm *tm)
                 hour = 0;
             }
         }
-        token();
+        if (token() == UTC) {
+            /* Handle UTC offset */
+            hour += tm->tm_gmtoff / 3600;
+            hour %= 24;
+            minute += tm->tm_gmtoff / 60;
+            minute %= 60;
+            tm->tm_gmtoff = 0;
+            token();
+        }
     } else if (hour > 23) {
         panic("garbled time");
     }

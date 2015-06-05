@@ -1,4 +1,7 @@
-README.txt
+LICENSE
+README.md
+Makefile
 parsetime.c
 parsetime.h
+parsetimemodule.c
 setup.py

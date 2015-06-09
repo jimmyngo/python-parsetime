@@ -165,9 +165,13 @@ static int seconds_defined; /* If seconds has been set */
 /* Local functions */
 
 void usage () {
+    fprintf(stderr, "usage: parsetime [timespec]");
+    exit(1);
 }
 
 void panic (char *message) {
+    fprintf(stderr, "%s", message);
+    exit(1);
 }
 
 /*
@@ -709,7 +713,7 @@ month(struct tm *tm)
 /* Global functions */
 
 time_t
-parsetime(int argc, char **argv)
+parsetime(int token_nr, char **token_arr)
 {
 /* Do the argument parsing, die if necessary, and return the time the job
  * should be run.
@@ -727,11 +731,7 @@ parsetime(int argc, char **argv)
 
     seconds_defined = 0;
 
-    if (argc <= optind) {
-        usage();
-    }
-
-    init_scanner(argc-optind, argv+optind);
+    init_scanner(token_nr, token_arr);
 
     switch (token()) {
         case NOW:
@@ -789,7 +789,11 @@ int main
 {
 /* main function to build command-line binary for testing */
     time_t result;
-    result = parsetime(argc, argv);
+    if (argc < 2) {
+        usage();
+    }
+
+    result = parsetime(argc-optind, argv+optind);
     printf("%s", ctime(&result));
     return 1;
 }

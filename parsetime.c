@@ -156,21 +156,17 @@ static char *sc_token;  /* scanner - token buffer */
 static size_t sc_len;   /* scanner - length of token buffer */
 static int sc_tokid;    /* scanner - token id */
 
-static int expecting_number[1] = { NUMBER };
-static int expecting_eof[1] = { EOF };
-static int expecting_plus_minus[2] = { PLUS, MINUS };
-
 static int seconds_defined; /* If seconds has been set */
 
 /* Local functions */
 
 void usage () {
-    fprintf(stderr, "usage: parsetime [timespec]");
+    fprintf(stderr, "usage: parsetime [timespec]\n");
     exit(1);
 }
 
 void panic (char *message) {
-    fprintf(stderr, "%s", message);
+    fprintf(stderr, "%s\n", message);
     exit(1);
 }
 
@@ -300,16 +296,9 @@ plonk(int tok)
  * expect() gets a token and dies most horribly if it's not the token we want
  */
 static void
-expect(const int *desired)
+expect(const int desired)
 {
-    int next_token;
-    int i;
-
-    next_token = token();
-    for (i = 0; i < sizeof(desired); i++) {
-        if (next_token == desired[i]) {
-            return;
-        }
+    if (token() != desired) {
         /* and we die here... */
         plonk(sc_tokid);
     }
@@ -387,7 +376,7 @@ plusminus(struct tm *tm)
             case MINUS:
             case PLUS:
                 op_token = sc_tokid;
-                expect(expecting_number);
+                expect(NUMBER);
 
                 /* Look for decimal value for increments */
                 if (*sct == '.') {
@@ -403,7 +392,7 @@ plusminus(struct tm *tm)
 
                     /* Skip decimal */
                     sct++;
-                    expect(expecting_number);
+                    expect(NUMBER);
 
                     /* Reinsert the decimal */
                     float_value[float_len] = '.';
@@ -454,13 +443,13 @@ tod(struct tm *tm)
      * a HHMM time, otherwise it's HH DOT MM time or HH DOT MM DOT SS
      */
     if (token() == DOT) {
-        expect(expecting_number);
+        expect(NUMBER);
         minute = atoi(sc_token);
         if (minute > 59) {
             panic("garbled time");
         }
         if (token() == DOT) {
-            expect(expecting_number);
+            expect(NUMBER);
             seconds_defined = 1;
             second = atoi(sc_token);
             if (second > 59) {
@@ -621,7 +610,7 @@ month(struct tm *tm)
             /* do month mday [year]
             */
             mon = (sc_tokid-JAN);
-            expect(expecting_number);
+            expect(NUMBER);
             mday = atol(sc_token);
             if (token() == NUMBER) {
                 year = atol(sc_token);
@@ -663,10 +652,10 @@ month(struct tm *tm)
                 int sep;
 
                 sep = sc_tokid;
-                expect(expecting_number);
+                expect(NUMBER);
                 mday = atol(sc_token);
                 if (token() == sep) {
-                    expect(expecting_number);
+                    expect(NUMBER);
                     year = atol(sc_token);
                     token();
                 }
@@ -735,8 +724,6 @@ parsetime(int token_nr, char **token_arr)
 
     switch (token()) {
         case NOW:
-            /* now is optional prefix for PLUS or MINUS tree */
-            expect(expecting_plus_minus);
         case PLUS:
         case MINUS:
             plusminus(&runtime);
@@ -770,7 +757,7 @@ parsetime(int token_nr, char **token_arr)
             month(&runtime);
             break;
     } /* ugly case statement */
-    expect(expecting_eof);
+    expect(EOF);
 
     /* convert back to time_t
     */

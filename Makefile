@@ -21,6 +21,7 @@ extension: $(COJBS)
 test: test_parsetime
 
 test/parsetime.so:
+	rm -f test/parsetime.so
 	ln parsetime.so test/parsetime.so
 
 test_parsetime: extension test/parsetime.so

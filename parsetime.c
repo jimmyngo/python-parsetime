@@ -480,14 +480,14 @@ tod(struct tm *tm)
 
     /* check if an AM or PM specifier was given
      */
-    if (sc_tokid == AM || sc_tokid == PM || sc_tokid == UTC) {
+    if (sc_tokid == AM || sc_tokid == PM) {
         if (hour > 12) {
             panic("garbled time");
         }
 
         if (sc_tokid == PM) {
             /* 12:xx PM is 12:xx, not 24:xx */
-            if (hour != 12) { 
+            if (hour != 12) {
                 hour += 12;
             }
         } else {
@@ -496,17 +496,19 @@ tod(struct tm *tm)
                 hour = 0;
             }
         }
-        if (token() == UTC) {
-            /* Handle UTC offset */
-            hour += tm->tm_gmtoff / 3600;
-            hour %= 24;
-            minute += tm->tm_gmtoff / 60;
-            minute %= 60;
-            tm->tm_gmtoff = 0;
-            token();
-        }
+        token();
     } else if (hour > 23) {
         panic("garbled time");
+    }
+
+    if (sc_tokid == UTC) {
+        /* Handle UTC offset */
+        hour += tm->tm_gmtoff / 3600;
+        hour %= 24;
+        minute += tm->tm_gmtoff / 60;
+        minute %= 60;
+        tm->tm_gmtoff = 0;
+        token();
     }
 
     /* if we specify an absolute time, we don't want to bump the day even

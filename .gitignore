@@ -1,0 +1,4 @@
+build/
+parsetime
+*.o
+*.so

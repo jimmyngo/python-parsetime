@@ -52,6 +52,16 @@
 
 /* Structures and unions */
 
+/* errors */
+enum {
+    GARBLED_TIME, INCOMPLETE_TIME
+};
+
+const char *ErrorMessages[2] = {
+    "garbled time",
+    "incomplete_time",
+};
+
 /* symbols */
 enum {
     MIDNIGHT, NOON, TEATIME,
@@ -157,6 +167,9 @@ static size_t sc_len;   /* scanner - length of token buffer */
 static int sc_tokid;    /* scanner - token id */
 
 static int seconds_defined; /* If seconds has been set */
+static int utc_defined; /* If utc has been set */
+static int ret_code; /* If utc has been set */
+
 
 /* Local functions */
 
@@ -165,9 +178,9 @@ void usage () {
     exit(1);
 }
 
-void panic (char *message) {
-    fprintf(stderr, "%s\n", message);
-    exit(1);
+void panic (int error) {
+    fprintf(stderr, "%s\n", ErrorMessages[error]);
+    ret_code = 1;
 }
 
 /*
@@ -178,7 +191,7 @@ parse_token(char *arg)
 {
     size_t i;
 
-    for (i=0; i<(sizeof Specials/sizeof Specials[0]); i++)
+    for (i = 0; i < (sizeof Specials / sizeof Specials[0]); i++)
     if (strcasecmp(Specials[i].name, arg) == 0) {
         return sc_tokid = Specials[i].value;
     }
@@ -288,7 +301,7 @@ token(void)
 static void
 plonk(int tok)
 {
-    panic((tok == EOF) ? "incomplete time" : "garbled time");
+    panic((tok == EOF) ? INCOMPLETE_TIME : GARBLED_TIME);
 } /* plonk */
 
 
@@ -446,14 +459,14 @@ tod(struct tm *tm)
         expect(NUMBER);
         minute = atoi(sc_token);
         if (minute > 59) {
-            panic("garbled time");
+            panic(GARBLED_TIME);
         }
         if (token() == DOT) {
             expect(NUMBER);
             seconds_defined = 1;
             second = atoi(sc_token);
             if (second > 59) {
-                panic("garbled time");
+                panic(GARBLED_TIME);
             }
             token();
         };
@@ -461,7 +474,7 @@ tod(struct tm *tm)
     else if (tlen == 4) {
         minute = hour % 100;
         if (minute > 59) {
-            panic("garbled time");
+            panic(GARBLED_TIME);
         }
         hour = hour / 100;
     }
@@ -469,11 +482,11 @@ tod(struct tm *tm)
         seconds_defined = 1;
         second = (hour % 100);
         if (second > 59) {
-            panic("garbled time");
+            panic(GARBLED_TIME);
         }
         minute = (hour % 10000) / 100;
         if (minute > 59) {
-            panic("garbled time");
+            panic(GARBLED_TIME);
         }
         hour = hour / 10000;
     }
@@ -482,7 +495,7 @@ tod(struct tm *tm)
      */
     if (sc_tokid == AM || sc_tokid == PM) {
         if (hour > 12) {
-            panic("garbled time");
+            panic(GARBLED_TIME);
         }
 
         if (sc_tokid == PM) {
@@ -498,7 +511,7 @@ tod(struct tm *tm)
         }
         token();
     } else if (hour > 23) {
-        panic("garbled time");
+        panic(GARBLED_TIME);
     }
 
     if (sc_tokid == UTC) {
@@ -508,6 +521,7 @@ tod(struct tm *tm)
         minute += tm->tm_gmtoff / 60;
         minute %= 60;
         tm->tm_gmtoff = 0;
+        utc_defined = 1;
         token();
     }
 
@@ -680,12 +694,12 @@ month(struct tm *tm)
                 mday = mon % 100;
                 mon /= 100;
             } else {
-                panic("garbled time");
+                panic(GARBLED_TIME);
             }
 
             mon--;
             if (mon < 0 || mon > 11 || mday < 1 || mday > 31) {
-                panic("garbled time");
+                panic(GARBLED_TIME);
             }
 
             assign_date(tm, mday, mon, year);
@@ -703,8 +717,8 @@ month(struct tm *tm)
 
 /* Global functions */
 
-time_t
-parsetime(int token_nr, char **token_arr)
+int
+parsetime(int token_nr, char **token_arr, time_t *result)
 {
 /* Do the argument parsing, die if necessary, and return the time the job
  * should be run.
@@ -716,11 +730,13 @@ parsetime(int token_nr, char **token_arr)
 
     nowtimer = time(NULL);
     nowtime = *localtime(&nowtimer);
+    mktime(&nowtime);
 
     runtime = nowtime;
-    runtime.tm_isdst = 0;
 
+    ret_code = 0;
     seconds_defined = 0;
+    utc_defined = 0;
 
     init_scanner(token_nr, token_arr);
 
@@ -766,23 +782,36 @@ parsetime(int token_nr, char **token_arr)
     runtime.tm_isdst = -1;
     runtimer = mktime(&runtime);
 
-    if (runtimer < 0) {
-        panic("garbled time");
+    // Account for DST
+    if (utc_defined == 1 && runtime.tm_isdst == 1) {
+        if (nowtime.tm_isdst == 1) {
+            runtimer += 3600;
+        } else if (nowtime.tm_isdst  == 0) {
+            runtimer += 7200;
+        }
     }
 
-    return runtimer;
+    if (runtimer < 0) {
+        panic(GARBLED_TIME);
+    }
+
+    *result = runtimer;
+    return ret_code;
 } /* parsetime */
 
 int main
 (int argc, char **argv)
 {
 /* main function to build command-line binary for testing */
+    int ret_code;
     time_t result;
     if (argc < 2) {
         usage();
     }
 
-    result = parsetime(argc-optind, argv+optind);
-    printf("%s", ctime(&result));
-    return 1;
+    ret_code = parsetime(argc-optind, argv+optind, &result);
+    if (ret_code == 0) {
+        printf("%s", ctime(&result));
+    }
+    return ret_code;
 }

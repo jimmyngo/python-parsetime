@@ -19,10 +19,10 @@ class ParsetimeTest(unittest.TestCase):
         ptime = parsetime('5:00 AM May 5 2003')
         self.assertEquals(self.rtime, ptime)
 
-        ptime = parsetime('12:00 PM UTC May 5 2003')
+        ptime = parsetime('11:00 AM UTC May 5 2003')
         self.assertEquals(self.rtime, ptime)
 
-        ptime = parsetime('12:00 UTC May 5 2003')
+        ptime = parsetime('11:00 UTC May 5 2003')
         self.assertEquals(self.rtime, ptime)
 
     def test_add_sec(self):

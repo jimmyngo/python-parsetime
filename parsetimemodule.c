@@ -5,6 +5,7 @@
 static PyObject *
 parsetime_parsetime(PyObject *self, PyObject *pytimestring)
 {
+    int ret_code = 0;
     int argc = 1;
     char *argv[1];
     const char *timestring;
@@ -16,8 +17,13 @@ parsetime_parsetime(PyObject *self, PyObject *pytimestring)
 
     argv[0] = (char*)timestring;
 
-    result = parsetime(argc, argv);
-    return Py_BuildValue("i", result);
+    ret_code = parsetime(argc, argv, &result);
+    if (ret_code == 0) {
+        return Py_BuildValue("i", result);
+    } else {
+        PyErr_SetString(PyExc_ValueError, ErrorMessages[ret_code]);
+        return NULL;
+    }
 }
 
 static PyMethodDef ParsetimeMethods[] = {

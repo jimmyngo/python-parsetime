@@ -23,4 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-time_t parsetime(int argc, char **argv);
+enum ERRORS;
+
+extern const char *ErrorMessages[2];
+
+int parsetime(int argc, char **argv, time_t *result);

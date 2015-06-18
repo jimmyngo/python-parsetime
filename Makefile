@@ -15,13 +15,13 @@ parsetime: $(COBJS)
 
 # Build extension
 extension: $(COJBS)
+	rm -f test/parsetime.so
 	python setup.py build_ext -i
 
 # Copy and test extension
 test: test_parsetime
 
 test/parsetime.so:
-	rm -f test/parsetime.so
 	ln parsetime.so test/parsetime.so
 
 test_parsetime: extension test/parsetime.so

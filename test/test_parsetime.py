@@ -1,3 +1,4 @@
+import datetime
 import unittest
 import time
 from parsetime import parsetime
@@ -6,7 +7,7 @@ class ParsetimeTest(unittest.TestCase):
 
     @classmethod
     def setUp(self):
-        self.rtime = 1052136000
+        self.rtime = time.mktime(datetime.datetime(2003, 5, 5, 5, 0, 0, 0, None).timetuple())
 
     def test_init(self):
         ptime = parsetime('')
@@ -19,11 +20,11 @@ class ParsetimeTest(unittest.TestCase):
         ptime = parsetime('5:00 AM May 5 2003')
         self.assertEquals(self.rtime, ptime)
 
-        ptime = parsetime('11:00 AM UTC May 5 2003')
-        self.assertEquals(self.rtime, ptime)
+        ptime = parsetime('12:00 PM UTC May 5 2003')
+        self.assertEquals(1052136000, ptime)
 
-        ptime = parsetime('11:00 UTC May 5 2003')
-        self.assertEquals(self.rtime, ptime)
+        ptime = parsetime('12:00 UTC May 5 2003')
+        self.assertEquals(1052136000, ptime)
 
     def test_add_sec(self):
         ptime = parsetime('5:00 AM May 5 2003+1s')

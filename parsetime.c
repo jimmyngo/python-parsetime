@@ -775,6 +775,7 @@ parsetime(int token_nr, char **token_arr, time_t *result)
     /* convert back to time_t
     */
 
+    runtime.tm_isdst = -1;
     runtimer = mktime(&runtime);
 
     if (utc_defined == 1) {

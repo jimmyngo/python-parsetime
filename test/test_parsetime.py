@@ -26,6 +26,9 @@ class ParsetimeTest(unittest.TestCase):
         ptime = parsetime('12:00 UTC May 5 2003')
         self.assertEquals(1052136000, ptime)
 
+        ptime = parsetime('10:00 AM Dec 25 2003')
+        self.assertEquals(time.mktime(datetime.datetime(2003, 12, 25, 10, 0, 0, 0, None).timetuple()), ptime)
+
     def test_add_sec(self):
         ptime = parsetime('5:00 AM May 5 2003+1s')
         self.assertEquals(self.rtime + 1, ptime)

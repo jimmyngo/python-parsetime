@@ -2,3 +2,4 @@ build/
 parsetime
 *.o
 *.so
+*.pyc

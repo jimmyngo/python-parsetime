@@ -516,11 +516,6 @@ tod(struct tm *tm)
 
     if (sc_tokid == UTC) {
         /* Handle UTC offset */
-        hour += tm->tm_gmtoff / 3600;
-        hour %= 24;
-        minute += tm->tm_gmtoff / 60;
-        minute %= 60;
-        tm->tm_gmtoff = 0;
         utc_defined = 1;
         token();
     }
@@ -779,16 +774,12 @@ parsetime(int token_nr, char **token_arr, time_t *result)
 
     /* convert back to time_t
     */
-    runtime.tm_isdst = -1;
+
     runtimer = mktime(&runtime);
 
-    // Account for DST
-    if (utc_defined == 1 && runtime.tm_isdst == 1) {
-        if (nowtime.tm_isdst == 1) {
-            runtimer += 3600;
-        } else if (nowtime.tm_isdst  == 0) {
-            runtimer += 7200;
-        }
+    if (utc_defined == 1) {
+      // Remove gmtoff since mktime inserts it
+      runtimer += runtime.tm_gmtoff;
     }
 
     if (runtimer < 0) {

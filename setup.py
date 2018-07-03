@@ -13,7 +13,7 @@ parsetime = Extension('parsetime',
                       sources=['parsetimemodule.c', 'parsetime.c'])
 
 setup(name='python-parsetime',
-      version='2.0.6',
+      version='2.0.7',
       author='Jimmy Ngo',
       author_email='jingo@linkedin.com',
       url='https://github.com/jimmyngo/python-parsetime',
@@ -29,7 +29,8 @@ setup(name='python-parsetime',
             'License :: OSI Approved :: Apache Software License',
             'Natural Language :: English',
             'Programming Language :: C',
-            'Programming Language :: Python',
+            'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3',
             'Topic :: Software Development :: Libraries :: Python Modules', ],
       ext_modules=[parsetime],
 )
